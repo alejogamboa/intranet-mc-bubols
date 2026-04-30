@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "wp-rest-api": {
+      "source": "wordpress/agent-skills",
+      "sourceType": "github",
+      "computedHash": "07d98b54fb41b6dccb0bae9f1a5b0d786776e9438ff5eba17d9dec7db89e5104"
+    }
+  }
+}

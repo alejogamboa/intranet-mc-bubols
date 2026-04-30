@@ -1,0 +1,278 @@
+/* ================================================================
+   MC-INTRANET — Design Tokens
+   Sistema de variables CSS para toda la intranet corporativa
+   Versión: 1.0 | Abril 2026
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
+
+/* ----------------------------------------------------------------
+   1. TIPOGRAFÍA
+   ---------------------------------------------------------------- */
+:root {
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Sora', system-ui, -apple-system, sans-serif;
+
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.875rem;   /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+  --text-5xl:  3rem;       /* 48px */
+
+  --weight-normal:    400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+  --weight-extrabold: 800;
+
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+}
+
+/* ----------------------------------------------------------------
+   2. ESPACIADO — 8pt grid
+   ---------------------------------------------------------------- */
+:root {
+  --space-1:  0.25rem;   /*  4px */
+  --space-2:  0.5rem;    /*  8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+}
+
+/* ----------------------------------------------------------------
+   3. BORDES Y RADIOS
+   ---------------------------------------------------------------- */
+:root {
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   0.75rem;
+  --radius-xl:   1rem;
+  --radius-2xl:  1.5rem;
+  --radius-full: 9999px;
+}
+
+/* ----------------------------------------------------------------
+   4. SOMBRAS
+   ---------------------------------------------------------------- */
+:root {
+  --shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.10), 0 1px 2px -1px rgba(0,0,0,0.10);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.10), 0 4px 6px -4px rgba(0,0,0,0.10);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.10), 0 8px 10px -6px rgba(0,0,0,0.10);
+}
+
+/* ----------------------------------------------------------------
+   5. TRANSICIONES
+   ---------------------------------------------------------------- */
+:root {
+  --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  --transition-colors: color var(--duration-fast) var(--ease-out),
+                       background-color var(--duration-fast) var(--ease-out),
+                       border-color var(--duration-fast) var(--ease-out);
+  --transition-all: all var(--duration-base) var(--ease-out);
+}
+
+/* ----------------------------------------------------------------
+   6. LAYOUT
+   ---------------------------------------------------------------- */
+:root {
+  --container-max: 1280px;
+  --nav-height:    64px;
+}
+
+/* ================================================================
+   7. PALETAS DE COLOR
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   7.1 MC-INTRANET — Portal Transversal (default)
+   ---------------------------------------------------------------- */
+:root {
+  /* Primarios */
+  --color-brand-50:  #EBF0F8;
+  --color-brand-500: #1E3A5F;
+  --color-brand-700: #122239;
+
+  /* Acento */
+  --color-accent-50:  #E7F1FB;
+  --color-accent-500: #2B7FD4;
+
+  /* Neutrales */
+  --color-gray-50:  #F8FAFC;
+  --color-gray-100: #F1F5F9;
+  --color-gray-200: #E2E8F0;
+  --color-gray-300: #CBD5E1;
+  --color-gray-400: #94A3B8;
+  --color-gray-500: #64748B;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1E293B;
+  --color-gray-900: #0F172A;
+
+  /* Semánticos */
+  --color-success:      #16A34A;
+  --color-success-tint: #DCFCE7;
+  --color-warning:      #D97706;
+  --color-warning-tint: #FEF3C7;
+  --color-error:        #DC2626;
+  --color-error-tint:   #FEE2E2;
+
+  /* Superficies */
+  --color-surface:       #FFFFFF;
+  --color-surface-2:     #F8FAFC;
+  --color-surface-3:     #F1F5F9;
+  --color-border:        #E2E8F0;
+  --color-border-strong: #CBD5E1;
+
+  /* Texto */
+  --color-text-primary:   #1E293B;
+  --color-text-secondary: #475569;
+  --color-text-muted:     #94A3B8;
+  --color-text-inverse:   #FFFFFF;
+
+  /* ── Variables activas (sobrescritas por empresa) ── */
+  --color-company-50:          #EBF0F8;
+  --color-company:             #1E3A5F;
+  --color-company-dark:        #122239;
+  --color-company-accent:      #2B7FD4;
+  --color-company-accent-tint: #E7F1FB;
+}
+
+/* ----------------------------------------------------------------
+   7.2 PROJECTION ANSTRA — Admin · Contabilidad · RRHH
+   Navy #1A2E52 + Dorado #C9A84C
+   ---------------------------------------------------------------- */
+[data-company="anstra"] {
+  --color-company-50:          #EEF2FA;
+  --color-company:             #1A2E52;
+  --color-company-dark:        #111F38;
+  --color-company-accent:      #C9A84C;
+  --color-company-accent-tint: #FBF5E6;
+}
+
+/* ----------------------------------------------------------------
+   7.3 ESSENZA FOODS — Comercial · Marca · Ventas
+   Esmeralda #1B6B45 + Naranja #F4874B
+   ---------------------------------------------------------------- */
+[data-company="essenza"] {
+  --color-company-50:          #ECFAF3;
+  --color-company:             #1B6B45;
+  --color-company-dark:        #124930;
+  --color-company-accent:      #F4874B;
+  --color-company-accent-tint: #FEF0E8;
+}
+
+/* ----------------------------------------------------------------
+   7.4 BUDEFRY — Operación · Producción
+   Gris Industrial #2D3748 + Naranja #E85D04
+   ---------------------------------------------------------------- */
+[data-company="budefry"] {
+  --color-company-50:          #F0F2F5;
+  --color-company:             #2D3748;
+  --color-company-dark:        #1E2532;
+  --color-company-accent:      #E85D04;
+  --color-company-accent-tint: #FEF0E6;
+}
+
+/* ----------------------------------------------------------------
+   7.5 INTERACTÚA — Cultura · Employer Branding
+   Índigo #4338CA + Rosa #EC4899
+   ---------------------------------------------------------------- */
+[data-company="interactua"] {
+  --color-company-50:          #EEECFB;
+  --color-company:             #4338CA;
+  --color-company-dark:        #312693;
+  --color-company-accent:      #EC4899;
+  --color-company-accent-tint: #FDE8F3;
+}
+
+/* ================================================================
+   8. RESET Y BASE
+   ================================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-2);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  color: var(--color-text-primary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+ul, ol { list-style: none; }
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ── Contenedor global ── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .container { padding-inline: var(--space-4); }
+}

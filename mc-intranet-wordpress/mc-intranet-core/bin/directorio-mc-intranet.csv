@@ -1,0 +1,56 @@
+﻿Area;Cargo;Nombre;Celular;email;empresa
+Direccion;Director Ejecutivo | Repr. Legal;Jorge Enrique Atehortúa Ramirez;3011043124;direccionejecutiva@anstra.com.co;anstra
+Direccion;Directora Adminis. y Financiera;Martha Luz Forero Caldas;3152605077;direccionaf@anstra.com.co;anstra
+Tecnologia;Coordinador TIC;Felipe Alvarez Tabarez;3022324087;coordinadortics@anstra.com.co ;anstra
+Tecnologia;Auxiliar TIC;Jhoan Andrés Mejia Hoyos;3011334855;auxiliartic@anstra.com.co;anstra
+Administración;Jefe Administrativa;Maria Alejandra Velásquez Gallego;3015522130;administracion@anstra.com.co;anstra
+Administración;Auxiliar adminis. (Gestión Humana);Diego Alejandro Caro Caro;3005096438;talentohumano@anstra.com.co;anstra
+Administración;Auxiliar adminis. (Factura Electró.);Maria Alejandra Gil Urrego;3044159204;compras@anstra.com.co;anstra
+Administración;Auxiliar adminis. (Compras);Maria Alejandra Gil Urrego;3044159204;fecompras@anstra.com.co;anstra
+Administración;Auxiliar Adminis. (Tesorería);Jhoana Lemos Del Toro;3042744396;tesoreria@anstra.com.co;anstra
+Administración;Auxiliar Administrativa;Maria Esthefania Florez Villa;3011334724;administrativo1@anstra.com.co;anstra
+Contabilidad;Jefe Contabilidad;Paola Andrea Marin Salazar;3005096373;jefecontabilidad@anstra.com.co;anstra
+Contabilidad;Facturacion Anstra;Paola Andrea Marin Salazar;3005096373;facturacion@anstra.com.co;anstra
+Contabilidad;Auxiliar contable (Pagos);Alvaro Enrique Saumeth Martinez;3011783045;contabilidad1@anstra.com.co;anstra
+Contabilidad;Analista contable (Cartera);Jorge Antonio Gaitán Quiceno;3011334835;contabilidad2@anstra.com.co;anstra
+Contabilidad;Contador;Monica Maria Muñoz Vargas;3011783045;contabilidad@anstra.com.co;anstra
+Contabilidad;Auxiliar contable (Causación);Monica Maria Muñoz Vargas;3011783045;contabilidad3@anstra.com.co;anstra
+Contabilidad;Practicante contabilidad;Cristian Camilo Muñoz Toncel;3011783045;practicantecontabilidad@anstra.com.co;anstra
+SST;Asesora SST-SIG;Catherine Marín Rosado;3013317228;sg-sst@anstra.com.co;anstra
+Operaciones;Director Operaciones | Repr. Legal;Juan Esteban Pareja Pulgarín;3044159115;direccionoperaciones@budefry.com;budefry
+Mantenimiento;Jefe Mantenimiento e Ingeneria;Andrés Felipe Marin Ortiz;3005096337;jefeingenieria@budefry.com;budefry
+SIG;Coordinadora SIG;Yeraldin Llano Quintero;3005096374;coordinacionsig@budefry.com;budefry
+Logistica;Coordinador Logistico;Diego Alejandro Morales Pabón;3044159158;coordinacionlogistica@budefry.com;budefry
+Logistica;Lider Logistica;Yonias Quejada Santos;3332419520;liderlogistica2@budefry.com;budefry
+Logistica;Analista de Inventarios y Suministros;Patricia Sandoval Silva;3005150551;analistainventarios@budefry.com;budefry
+Producción;Jefe de Productividad y Calidad;Kelly Johana Restrepo Buitrago;3005150604;productividad-calidad@budefry.com;budefry
+Producción;Coordinador Producción;Hansel Josues González;3007346050;coordinadorproduccion1@budefry.com;budefry
+Producción;Analista de Procesos;Jofre Jose Naveda Sanchez;3005096368;analistaprocesos2@budefry.com;budefry
+Producción;Coordinador Calidad;Luis Alberto Romano Llerena;3007345370;coordinacioncalidad@budefry.com;budefry
+Tecnica;Coordinadora I+D+I;Paula Andrea Toro Valencia;3243515725;coordinacionid@budefry.com;budefry
+Tecnica;Analista I+D+I;Juan Pablo Castaño Ortiz;3243515725;analistaid@budefry.com;budefry
+Administración;Director Ejecutivo ;Jorge Enrique Atehortúa Ramirez;3011043124;direccionejecutiva@budefry.com;budefry
+Administración;Directora Adminis. y Financiera;Martha Luz Forero Caldas;3152605077;direccionaf@budefry.com;budefry
+Administración;Auxiliar adminis. (Compras);Maria Alejandra Gil Urrego;3044159204;fecompras@budefry.com;budefry
+Comercial;Auxiliar Facturación;Lina Marcela Cano Orrego;3005096560;facturacion@budefry.com;budefry
+Comercial;Director Comercial;Jhon Alexander Arango Castrillón;3046560661;direccioncomercial@essenza-foods.com;essenza
+Comercial;Apoyo Dirección Comercial (ADC);Santiago Velásquez Baena;3042744381;ap.comercial@essenza-foods.com;essenza
+Comercial;Coordinadora Marketing;Karen Marcela Arredondo López;3001417258;marketing@essenza-foods.com;essenza
+Comercial;Community Manager;Juliana Rey Ríos;3001417258;redes@essenza-foods.com;essenza
+Comercial;Creativa Grafica;Luisa Fernanda Benitez Duque;0;grafico@essenza-foods.com;essenza
+Comercial;Coordinador Comercial;Andrés Rodríguez Arroyabe;3023273294;coordinacioncomercial@essenza-foods.com;essenza
+Comercial;Repres. Desarr. de Clientes (RDC);David Steeven García Casas;3042738657;rdclientes@essenza-foods.com;essenza
+Comercial;Asesor VTE;Luisa Fernanda Giraldo Silva;3042684184;vte@essenza-foods.com;essenza
+Comercial;Ejecutiva comercial (Distribuidores);Viviana Patricia Toncel Torres;3023273817;ejecutivodist@essenza-foods.com;essenza
+Comercial;Asesora Comercial (Distribuidores);Julieth Builes Tabares;3175707932;distribuidores@essenza-foods.com;essenza
+Comercial;Auxiliar Facturación (Distribuidores);Lina Marcela Higuita Muñoz;3005358981;facturaciondist@essenza-foods.com;essenza
+Comercial;Ejecutivo Comercial;Danny Fabian Arredondo López;3042684181;ejecutivocomercial@essenza-foods.com;essenza
+Comercial;Asesora comercial (Digital);Katherine Sierra Zuluaga;3173056212;asesordigital@essenza-foods.com;essenza
+Comercial;Asesora comercial (Redes);Manuela Andrea Londoño Usuga;3174360310;asesoriasredes@essenza-foods.com;essenza
+Comercial;Auxiliar Facturación;Lina Marcela Cano Orrego;3005096560;facturacion@essenza-foods.com;essenza
+Logistica;Lider Logistica;Giovanny Rojas Nieto ;3183799513;liderlogistica1@essenza-foods.com;essenza
+Logistica;Picking y Packing;Santiago Alexis Salazar Hernandez ;3003133841;liderlogistica1@essenza-foods.com;essenza
+Logistica;Conductor;Jorge Alban Alvarez Mazo;3011783046;liderlogistica1@essenza-foods.com;essenza
+Administración;Director Ejecutivo | Repr. Legal;Jorge Enrique Atehortúa Ramirez;3011043124;direccionejecutiva@essenza-foods.com;essenza
+Administración;Directora Adminis. y Financiera;Martha Luz Forero Caldas;3152605077;direccionaf@essenza-foods.com;essenza
+Administración;Auxiliar adminis. (Compras);Maria Alejandra Gil Urrego;3044159204;fecompras@essenza-foods.com;essenza

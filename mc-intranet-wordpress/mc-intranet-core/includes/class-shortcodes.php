@@ -1,0 +1,520 @@
+<?php
+/**
+ * Shortcodes — MC Intranet Core.
+ *
+ * Shortcodes registrados:
+ *  [mc_formularios]       → Grid de form-cards filtrado por empresa y área
+ *  [mc_company_portals]   → Grid de portales de empresa
+ *  [mc_sedes]             → Footer locations
+ *  [mc_reconocimientos]   → Grid de recognition-cards
+ *  [mc_eventos]           → Timeline de eventos
+ *  [mc_context_alert]     → Alerta de contexto de empresa
+ *
+ * @package MC_Intranet_Core
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class MC_Intranet_Shortcodes {
+
+    public function __construct() {
+        add_shortcode( 'mc_formularios',              [ $this, 'shortcode_formularios' ] );
+        add_shortcode( 'mc_company_portals',          [ $this, 'shortcode_company_portals' ] );
+        add_shortcode( 'mc_sedes',                    [ $this, 'shortcode_sedes' ] );
+        add_shortcode( 'mc_reconocimientos',          [ $this, 'shortcode_reconocimientos' ] );
+        add_shortcode( 'mc_eventos',                  [ $this, 'shortcode_eventos' ] );
+        add_shortcode( 'mc_context_alert',            [ $this, 'shortcode_context_alert' ] );
+        add_shortcode( 'mc_directorio_contactos',     [ $this, 'shortcode_directorio_contactos' ] );
+    }
+
+    // ─── [mc_formularios] ────────────────────────────────────────────────────
+
+    /**
+     * @param array $atts {
+     *   @type string $empresa  Slug de empresa: mc|anstra|essenza|budefry. Default: mc.
+     *   @type string $area     Slug de área:    administracion|tic|gestiones|rrhh. Default: ''.
+     *   @type string $featured 'yes' para solo destacados. Default: ''.
+     * }
+     */
+    public function shortcode_formularios( $atts ): string {
+        $atts = shortcode_atts( [
+            'empresa'  => 'mc',
+            'area'     => '',
+            'featured' => '',
+        ], $atts, 'mc_formularios' );
+
+        // Sanitizar
+        $empresa  = sanitize_key( $atts['empresa'] );
+        $area     = sanitize_key( $atts['area'] );
+        $featured = 'yes' === sanitize_key( $atts['featured'] );
+
+        $tax_query = [
+            'relation' => 'AND',
+            [
+                'taxonomy' => 'mc_empresa',
+                'field'    => 'slug',
+                'terms'    => $empresa,
+            ],
+        ];
+
+        if ( $area ) {
+            $tax_query[] = [
+                'taxonomy' => 'mc_area',
+                'field'    => 'slug',
+                'terms'    => $area,
+            ];
+        }
+
+        $meta_query = [ 'relation' => 'AND' ];
+        if ( $featured ) {
+            $meta_query[] = [
+                'key'     => 'is_featured',
+                'value'   => '1',
+                'compare' => '=',
+            ];
+        }
+
+        $query = new WP_Query( [
+            'post_type'      => 'mc_formulario',
+            'posts_per_page' => 50,
+            'post_status'    => 'publish',
+            'tax_query'      => $tax_query,
+            'meta_query'     => $meta_query,
+            'meta_key'       => 'order_weight',
+            'orderby'        => 'meta_value_num',
+            'order'          => 'ASC',
+        ] );
+
+        if ( ! $query->have_posts() ) {
+            return '';
+        }
+
+        $forms = [];
+
+        while ( $query->have_posts() ) {
+            $query->the_post();
+
+            $form_id      = get_the_ID();
+            $company_slug = (string) get_post_meta( $form_id, 'company_context', true );
+            $area_slug    = (string) get_post_meta( $form_id, 'area_context', true );
+
+            $form_data = [
+                'id'           => $form_id,
+                'title'        => get_the_title(),
+                'description'  => get_the_excerpt(),
+                'form_url'     => esc_url_raw( (string) get_post_meta( $form_id, 'form_url', true ) ),
+                'cta_label'    => (string) get_post_meta( $form_id, 'cta_label', true ) ?: __( 'Abrir formulario', 'mc-intranet-core' ),
+                'open_new_tab' => (bool) get_post_meta( $form_id, 'open_new_tab', true ),
+                'is_featured'  => (bool) get_post_meta( $form_id, 'is_featured', true ),
+                'form_type'    => (string) get_post_meta( $form_id, 'form_type', true ) ?: 'form',
+                'post_name'    => (string) get_post_field( 'post_name', $form_id ),
+                'company'      => $company_slug,
+                'area'         => $area_slug,
+                'order_weight' => (int) get_post_meta( $form_id, 'order_weight', true ),
+            ];
+
+            $logical_key = $this->get_form_logical_key( $form_data, $empresa, $area );
+
+            if ( ! isset( $forms[ $logical_key ] ) || $this->is_better_form_candidate( $form_data, $forms[ $logical_key ] ) ) {
+                $forms[ $logical_key ] = $form_data;
+            }
+        }
+        wp_reset_postdata();
+
+        if ( empty( $forms ) ) {
+            return '';
+        }
+
+        uasort(
+            $forms,
+            static function ( array $left, array $right ): int {
+                $weight_compare = $left['order_weight'] <=> $right['order_weight'];
+
+                if ( 0 !== $weight_compare ) {
+                    return $weight_compare;
+                }
+
+                return strcasecmp( $left['title'], $right['title'] );
+            }
+        );
+
+        ob_start();
+        echo '<div class="form-cards-grid">';
+        foreach ( $forms as $form_data ) {
+            include MC_CORE_TEMPLATES . 'form-card.php';
+        }
+        echo '</div>';
+
+        return ob_get_clean();
+    }
+
+    private function get_form_logical_key( array $form_data, string $fallback_company, string $fallback_area ): string {
+        $title   = sanitize_title( $form_data['title'] ?? '' );
+        $company = sanitize_key( $form_data['company'] ?: $fallback_company );
+        $area    = sanitize_key( $form_data['area'] ?: $fallback_area );
+
+        return implode( '|', [ $company, $area, $title ] );
+    }
+
+    private function is_better_form_candidate( array $candidate, array $current ): bool {
+        $candidate_is_canonical = 0 === strpos( $candidate['post_name'], 'form-' );
+        $current_is_canonical   = 0 === strpos( $current['post_name'], 'form-' );
+
+        if ( $candidate_is_canonical !== $current_is_canonical ) {
+            return $candidate_is_canonical;
+        }
+
+        if ( $candidate['order_weight'] !== $current['order_weight'] ) {
+            return $candidate['order_weight'] < $current['order_weight'];
+        }
+
+        return $candidate['id'] > $current['id'];
+    }
+
+    // ─── [mc_company_portals] ────────────────────────────────────────────────
+
+    public function shortcode_company_portals( $atts ): string {
+        $portals = [
+            [
+                'slug'        => 'anstra',
+                'name'        => 'Projection Anstra',
+                'desc'        => 'Gestión administrativa, contabilidad y recursos humanos del grupo corporativo.',
+                'color_start' => '#1A2E52',
+                'color_end'   => '#253E6E',
+                'link_color'  => '#1A2E52',
+                'url'         => home_url( '/anstra/' ),
+                'tags'        => [ 'RRHH', 'Contabilidad', 'Administración' ],
+                'count_label' => '4 formularios',
+            ],
+            [
+                'slug'        => 'essenza',
+                'name'        => 'Essenza Foods',
+                'desc'        => 'Gestión de marca, comercial, mercadeo y ventas de la línea de alimentos.',
+                'color_start' => '#1B6B45',
+                'color_end'   => '#237D53',
+                'link_color'  => '#1B6B45',
+                'url'         => home_url( '/essenza/' ),
+                'tags'        => [ 'RRHH', 'Comercial', 'Mercadeo' ],
+                'count_label' => '4 formularios',
+            ],
+            [
+                'slug'        => 'budefry',
+                'name'        => 'Budefry SAS',
+                'desc'        => 'Operación, logística y procesos de producción industrial.',
+                'color_start' => '#2D3748',
+                'color_end'   => '#3D4F66',
+                'link_color'  => '#2D3748',
+                'url'         => home_url( '/budefry/' ),
+                'tags'        => [ 'RRHH', 'Producción', 'Operaciones' ],
+                'count_label' => '4 formularios',
+            ],
+            [
+                'slug'        => 'interactua',
+                'name'        => 'Interactúa',
+                'desc'        => 'Cultura corporativa, employer branding, reconocimientos y eventos del grupo.',
+                'color_start' => '#4338CA',
+                'color_end'   => '#5048D6',
+                'link_color'  => '#4338CA',
+                'url'         => home_url( '/interactua/' ),
+                'tags'        => [ 'Reconocimientos', 'Eventos', 'Cultura' ],
+                'count_label' => 'Novedades',
+            ],
+        ];
+
+        ob_start();
+        echo '<div class="company-portals-grid">';
+        foreach ( $portals as $portal ) {
+            include MC_CORE_TEMPLATES . 'company-portal-card.php';
+        }
+        echo '</div>';
+        return ob_get_clean();
+    }
+
+    // ─── [mc_sedes] ──────────────────────────────────────────────────────────
+
+    public function shortcode_sedes( $atts ): string {
+        $atts    = shortcode_atts( [ 'empresa' => '' ], $atts, 'mc_sedes' );
+        $empresa = sanitize_key( $atts['empresa'] );
+
+        $args = [
+            'post_type'      => 'mc_sede',
+            'posts_per_page' => 20,
+            'post_status'    => 'publish',
+            'orderby'        => 'menu_order',
+            'order'          => 'ASC',
+        ];
+
+        if ( $empresa ) {
+            $args['tax_query'] = [ [
+                'taxonomy' => 'mc_empresa',
+                'field'    => 'slug',
+                'terms'    => $empresa,
+            ] ];
+        }
+
+        $query = new WP_Query( $args );
+        if ( ! $query->have_posts() ) {
+            return '';
+        }
+
+        ob_start();
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $sede_data = [
+                'company'  => esc_html( (string) get_post_meta( get_the_ID(), 'company_label', true ) ),
+                'name'     => esc_html( get_the_title() ),
+                'address'  => esc_html( (string) get_post_meta( get_the_ID(), 'address_full', true ) ),
+                'maps_url' => esc_url( (string) get_post_meta( get_the_ID(), 'maps_url', true ) ),
+            ];
+            include MC_CORE_TEMPLATES . 'footer-location.php';
+        }
+        wp_reset_postdata();
+        return ob_get_clean();
+    }
+
+    // ─── [mc_reconocimientos] ────────────────────────────────────────────────
+
+    public function shortcode_reconocimientos( $atts ): string {
+        $atts  = shortcode_atts( [ 'limit' => 10 ], $atts, 'mc_reconocimientos' );
+        $limit = absint( $atts['limit'] );
+
+        $query = new WP_Query( [
+            'post_type'      => 'mc_reconocimiento',
+            'posts_per_page' => $limit,
+            'post_status'    => 'publish',
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ] );
+
+        if ( ! $query->have_posts() ) {
+            return '';
+        }
+
+        ob_start();
+        echo '<div class="recognition-grid">';
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $rec_data = [
+                'name'     => esc_html( get_the_title() ),
+                'role'     => esc_html( (string) get_post_meta( get_the_ID(), 'person_role', true ) ),
+                'company'  => esc_html( (string) get_post_meta( get_the_ID(), 'person_company', true ) ),
+                'type'     => esc_html( (string) get_post_meta( get_the_ID(), 'achievement_type', true ) ),
+                'excerpt'  => esc_html( (string) get_post_meta( get_the_ID(), 'achievement_excerpt', true ) ),
+                'initials' => esc_html( substr( (string) get_post_meta( get_the_ID(), 'person_initials', true ), 0, 3 ) ),
+            ];
+            include MC_CORE_TEMPLATES . 'recognition-card.php';
+        }
+        echo '</div>';
+        wp_reset_postdata();
+        return ob_get_clean();
+    }
+
+    // ─── [mc_eventos] ────────────────────────────────────────────────────────
+
+    public function shortcode_eventos( $atts ): string {
+        $atts     = shortcode_atts( [ 'limit' => 10, 'upcoming' => '' ], $atts, 'mc_eventos' );
+        $limit    = absint( $atts['limit'] );
+        $upcoming = 'yes' === sanitize_key( $atts['upcoming'] );
+
+        $args = [
+            'post_type'      => 'mc_evento',
+            'posts_per_page' => $limit,
+            'post_status'    => 'publish',
+            'meta_key'       => 'event_date',
+            'orderby'        => 'meta_value',
+            'order'          => 'DESC',
+        ];
+
+        if ( $upcoming ) {
+            $args['meta_query'] = [ [
+                'key'     => 'event_date',
+                'value'   => gmdate( 'Y-m-d' ),
+                'compare' => '>=',
+                'type'    => 'DATE',
+            ] ];
+            $args['order'] = 'ASC';
+        }
+
+        $query = new WP_Query( $args );
+        if ( ! $query->have_posts() ) {
+            return '';
+        }
+
+        ob_start();
+        echo '<div class="events-timeline">';
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $event_data = [
+                'title'    => esc_html( get_the_title() ),
+                'date'     => esc_html( (string) get_post_meta( get_the_ID(), 'event_date', true ) ),
+                'mode'     => esc_html( (string) get_post_meta( get_the_ID(), 'event_mode', true ) ),
+                'location' => esc_html( (string) get_post_meta( get_the_ID(), 'event_location', true ) ),
+                'content'  => wp_kses_post( get_the_content() ),
+                'featured' => (bool) get_post_meta( get_the_ID(), 'event_featured', true ),
+            ];
+            include MC_CORE_TEMPLATES . 'event-item.php';
+        }
+        echo '</div>';
+        wp_reset_postdata();
+        return ob_get_clean();
+    }
+
+    // ─── [mc_context_alert] ──────────────────────────────────────────────────
+
+    public function shortcode_context_alert( $atts ): string {
+        $atts    = shortcode_atts( [ 'empresa' => '' ], $atts, 'mc_context_alert' );
+        $empresa = sanitize_key( $atts['empresa'] );
+
+        if ( ! $empresa ) {
+            $empresa = MC_Intranet_Company_Context::get_context();
+        }
+
+        $config = [
+            'anstra' => [
+                'label'      => 'Projection Anstra',
+                'alert_class' => 'alert--info',
+                'title'      => 'Portal exclusivo de Projection Anstra',
+                'body'       => 'Los formularios de esta sección corresponden únicamente a colaboradores de Projection Anstra. Si perteneces a otra empresa del grupo, regresa al %s y selecciona tu empresa.',
+            ],
+            'essenza' => [
+                'label'      => 'Essenza Foods',
+                'alert_class' => 'alert--info',
+                'title'      => 'Portal exclusivo de Essenza Foods',
+                'body'       => 'Los formularios de esta sección corresponden únicamente a colaboradores de Essenza Foods (NIT 901 971 854-7). Si perteneces a otra empresa del grupo, regresa al %s.',
+            ],
+            'budefry' => [
+                'label'      => 'Budefry SAS',
+                'alert_class' => 'alert--warning',
+                'title'      => 'Portal exclusivo de Budefry SAS',
+                'body'       => 'Los formularios de esta sección corresponden únicamente a colaboradores de Budefry SAS (NIT 901 565 887-9). Si operas desde planta en Guarne, usa tu dispositivo móvil. Si perteneces a otra empresa, regresa al %s.',
+            ],
+            'interactua' => [
+                'label'      => 'Interactúa',
+                'alert_class' => 'alert--info',
+                'title'      => 'Portal exclusivo de Interactúa',
+                'body'       => 'El contenido de esta sección corresponde a cultura corporativa y reconocimientos del grupo. Para formularios empresariales, regresa al %s.',
+            ],
+        ];
+
+        if ( ! isset( $config[ $empresa ] ) ) {
+            return '';
+        }
+
+        $label             = $config[ $empresa ]['label'];
+        $alert_class       = $config[ $empresa ]['alert_class'];
+        $alert_title       = $config[ $empresa ]['title'];
+        $alert_body_format = $config[ $empresa ]['body'];
+        $portal_link       = '<a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'portal principal', 'mc-intranet-core' ) . '</a>';
+        $alert_body        = sprintf( $alert_body_format, $portal_link );
+
+        $icon_markup = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+        if ( 'budefry' === $empresa ) {
+            $icon_markup = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10.29 3.86-8.35 14.5A2 2 0 0 0 3.67 21h16.66a2 2 0 0 0 1.73-2.64l-8.35-14.5a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+        }
+
+        ob_start();
+        ?>
+        <section class="context-alert-block" aria-label="<?php echo esc_attr( $label ); ?>">
+            <div class="container">
+                <div class="alert <?php echo esc_attr( $alert_class ); ?>" role="alert">
+                    <?php echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    <div>
+                        <p class="alert__title"><?php echo esc_html( $alert_title ); ?></p>
+                        <p class="alert__body"><?php echo wp_kses_post( $alert_body ); ?></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php
+        return ob_get_clean();
+    }
+
+    // ─── [mc_directorio_contactos] ───────────────────────────────────────────
+
+    /**
+     * Muestra el directorio corporativo de contactos, agrupado por área.
+     *
+     * @param array $atts {
+     *   @type string $empresa  Slug de empresa: mc|anstra|essenza|budefry|interactua. Default: ''.
+     * }
+     */
+    public function shortcode_directorio_contactos( $atts ): string {
+        $atts = shortcode_atts( [
+            'empresa' => '',
+        ], $atts, 'mc_directorio_contactos' );
+
+        $empresa = sanitize_key( $atts['empresa'] );
+
+        $meta_query = [ 'relation' => 'AND' ];
+
+        if ( $empresa ) {
+            $meta_query[] = [
+                'key'     => 'company_context',
+                'value'   => $empresa,
+                'compare' => '=',
+            ];
+        }
+
+        $query = new WP_Query( [
+            'post_type'      => 'mc_directorio',
+            'posts_per_page' => 200,
+            'post_status'    => 'publish',
+            'meta_query'     => $meta_query,
+            'orderby'        => 'title',
+            'order'          => 'ASC',
+        ] );
+
+        if ( ! $query->have_posts() ) {
+            return '';
+        }
+
+        // Agrupar por área y preparar listado plano para render único con tabs.
+        $groups       = [];
+        $all_contacts = [];
+
+        while ( $query->have_posts() ) {
+            $query->the_post();
+
+            $contact_id = get_the_ID();
+            $contact    = [
+                'id'      => $contact_id,
+                'nombre'  => (string) get_post_meta( $contact_id, 'nombre', true ) ?: get_the_title(),
+                'cargo'   => (string) get_post_meta( $contact_id, 'cargo', true ),
+                'area'    => (string) get_post_meta( $contact_id, 'area', true ),
+                'celular' => (string) get_post_meta( $contact_id, 'celular', true ),
+                'email'   => (string) get_post_meta( $contact_id, 'email', true ),
+                'empresa' => (string) get_post_meta( $contact_id, 'company_context', true ),
+            ];
+
+            $area_key = $contact['area'] ?: __( 'Sin área', 'mc-intranet-core' );
+            $groups[ $area_key ][] = $contact;
+            $all_contacts[] = $contact;
+        }
+        wp_reset_postdata();
+
+        if ( empty( $groups ) ) {
+            return '';
+        }
+
+        ksort( $groups );
+
+        uasort(
+            $all_contacts,
+            static function ( array $a, array $b ): int {
+                $area_compare = strcmp( (string) $a['area'], (string) $b['area'] );
+                if ( 0 !== $area_compare ) {
+                    return $area_compare;
+                }
+
+                return strcmp( (string) $a['nombre'], (string) $b['nombre'] );
+            }
+        );
+
+        ob_start();
+        include MC_CORE_TEMPLATES . 'contact-directory-tabs.php';
+
+        return ob_get_clean();
+    }
+}

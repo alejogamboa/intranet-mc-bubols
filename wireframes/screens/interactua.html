@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es" data-company="interactua">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactúa — MC Intranet</title>
+  <link rel="stylesheet" href="../css/design-tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+  <!-- NAVEGACIÓN GLOBAL -->
+  <nav class="global-nav" role="navigation" aria-label="Navegación principal">
+    <div class="container global-nav__inner">
+      <a href="./inicio.html" class="global-nav__logo" aria-label="MC Intranet — Inicio">
+        <div class="global-nav__logo-icon"><i data-lucide="globe"></i></div>
+        <div class="global-nav__logo-text">
+          <span class="global-nav__logo-name">MC Intranet</span>
+          <span class="global-nav__logo-sub">Portal Corporativo</span>
+        </div>
+      </a>
+      <ul class="global-nav__links" role="list" id="nav-links">
+        <li><a href="./inicio.html" class="global-nav__link"><i data-lucide="home"></i> Inicio</a></li>
+        <li><a href="./projection-anstra.html" class="global-nav__link"><i data-lucide="building-2"></i> Projection Anstra</a></li>
+        <li><a href="./essenza-foods.html" class="global-nav__link"><i data-lucide="shopping-bag"></i> Essenza Foods</a></li>
+        <li><a href="./budefry.html" class="global-nav__link"><i data-lucide="factory"></i> Budefry</a></li>
+        <li><a href="./interactua.html" class="global-nav__link" aria-current="page"><i data-lucide="sparkles"></i> Interactúa</a></li>
+      </ul>
+      <div class="global-nav__company-badge">Interactúa</div>
+      <button class="global-nav__toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-links" id="nav-toggle">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="page-hero" aria-labelledby="hero-title">
+      <div class="page-hero__pattern"></div>
+      <div class="container">
+        <div class="page-hero__inner">
+          <span class="page-hero__eyebrow">
+            <i data-lucide="sparkles"></i>
+            Cultura Corporativa · Employer Branding
+          </span>
+          <h1 class="page-hero__title" id="hero-title">
+            <span>Interactúa</span>
+          </h1>
+          <p class="page-hero__description">
+            El espacio donde celebramos los logros de nuestra gente. Reconocimientos corporativos, eventos importantes y la cultura que nos une como grupo.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         SECCIÓN: RECONOCIMIENTOS CORPORATIVOS
+         ═══════════════════════════════════════════════ -->
+    <section class="section-block" aria-labelledby="recog-title">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-header__icon"><i data-lucide="award"></i></div>
+          <div class="section-header__text">
+            <p class="section-header__label">Reconocimientos</p>
+            <h2 class="section-header__title" id="recog-title">Logros de Nuestra Gente</h2>
+            <p class="section-header__desc">Celebramos los logros académicos, profesionales y personales de los colaboradores del grupo. ¡Felicitamos a quienes se destacan!</p>
+          </div>
+        </div>
+
+        <div class="recognition-grid">
+
+          <article class="recognition-card">
+            <div class="recognition-card__avatar">LM</div>
+            <div class="recognition-card__content">
+              <p class="recognition-card__name">Laura Martínez</p>
+              <p class="recognition-card__role">Analista Comercial · Essenza Foods</p>
+              <p class="recognition-card__achievement">Completó con honores su Especialización en Mercadeo Estratégico en la Universidad de Medellín.</p>
+              <span class="recognition-card__badge"><i data-lucide="graduation-cap"></i> Logro Académico</span>
+            </div>
+          </article>
+
+          <article class="recognition-card">
+            <div class="recognition-card__avatar">CR</div>
+            <div class="recognition-card__content">
+              <p class="recognition-card__name">Carlos Restrepo</p>
+              <p class="recognition-card__role">Supervisor de Planta · Budefry SAS</p>
+              <p class="recognition-card__achievement">Recibió certificación en Gestión de Calidad ISO 9001:2015, fortaleciendo los procesos de producción.</p>
+              <span class="recognition-card__badge"><i data-lucide="shield-check"></i> Certificación Profesional</span>
+            </div>
+          </article>
+
+          <article class="recognition-card">
+            <div class="recognition-card__avatar">AP</div>
+            <div class="recognition-card__content">
+              <p class="recognition-card__name">Andrea Pérez</p>
+              <p class="recognition-card__role">Coordinadora RRHH · Projection Anstra</p>
+              <p class="recognition-card__achievement">Lideró con éxito el proceso de actualización del Sistema de Gestión de Talento Humano del grupo.</p>
+              <span class="recognition-card__badge"><i data-lucide="star"></i> Reconocimiento Interno</span>
+            </div>
+          </article>
+
+          <article class="recognition-card">
+            <div class="recognition-card__avatar">JG</div>
+            <div class="recognition-card__content">
+              <p class="recognition-card__name">Jorge Gómez</p>
+              <p class="recognition-card__role">Jefe Logística · Budefry SAS</p>
+              <p class="recognition-card__achievement">Optimizó la cadena de distribución en planta logrando una reducción del 18% en tiempos de entrega.</p>
+              <span class="recognition-card__badge"><i data-lucide="trending-up"></i> Impacto Operativo</span>
+            </div>
+          </article>
+
+          <article class="recognition-card">
+            <div class="recognition-card__avatar">SM</div>
+            <div class="recognition-card__content">
+              <p class="recognition-card__name">Sofía Muñoz</p>
+              <p class="recognition-card__role">Diseñadora de Marca · Essenza Foods</p>
+              <p class="recognition-card__achievement">Su campaña de rebranding para la línea de snacks fue seleccionada para el portafolio creativo nacional.</p>
+              <span class="recognition-card__badge"><i data-lucide="palette"></i> Logro Creativo</span>
+            </div>
+          </article>
+
+          <article class="recognition-card">
+            <div class="recognition-card__avatar">RC</div>
+            <div class="recognition-card__content">
+              <p class="recognition-card__name">Ricardo Cardona</p>
+              <p class="recognition-card__role">Contador · Projection Anstra</p>
+              <p class="recognition-card__achievement">Obtuvo la certificación internacional IFRS para la aplicación de estándares contables internacionales.</p>
+              <span class="recognition-card__badge"><i data-lucide="graduation-cap"></i> Certificación Internacional</span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════════
+         SECCIÓN: EVENTOS IMPORTANTES
+         ═══════════════════════════════════════════════ -->
+    <section class="section-block" style="background-color:var(--color-surface);" aria-labelledby="events-title">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-header__icon"><i data-lucide="calendar"></i></div>
+          <div class="section-header__text">
+            <p class="section-header__label">Agenda</p>
+            <h2 class="section-header__title" id="events-title">Eventos Importantes</h2>
+            <p class="section-header__desc">Avisos, celebraciones y fechas clave del grupo corporativo para el segundo semestre de 2026.</p>
+          </div>
+        </div>
+
+        <div class="events-timeline">
+
+          <article class="event-item">
+            <div class="event-item__date">
+              <span class="event-item__day">25</span>
+              <span class="event-item__month">ABR</span>
+            </div>
+            <div>
+              <h3 class="event-item__title">Día de Integración Corporativa 2026</h3>
+              <p class="event-item__desc">Jornada de integración para todos los colaboradores del grupo. Actividades recreativas, almuerzo y reconocimientos anuales en el Parque Industrial Rosendal. Participación obligatoria para todas las sedes.</p>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="tag" style="background:var(--color-company-accent-tint);color:var(--color-company-accent);">Todas las empresas</span>
+                <span class="tag">Presencial · Guarne</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="event-item">
+            <div class="event-item__date">
+              <span class="event-item__day">15</span>
+              <span class="event-item__month">MAY</span>
+            </div>
+            <div>
+              <h3 class="event-item__title">Capacitación: Herramientas Google Workspace</h3>
+              <p class="event-item__desc">Entrenamiento en el uso avanzado de Google Workspace para optimizar procesos colaborativos. Modalidad virtual a través de Google Meet. Registro previo obligatorio.</p>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="tag" style="background:var(--color-company-accent-tint);color:var(--color-company-accent);">TIC</span>
+                <span class="tag">Virtual · Google Meet</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="event-item">
+            <div class="event-item__date">
+              <span class="event-item__day">01</span>
+              <span class="event-item__month">JUN</span>
+            </div>
+            <div>
+              <h3 class="event-item__title">Jornada de Actualización de Datos RRHH</h3>
+              <p class="event-item__desc">Todos los colaboradores deben actualizar su perfil sociodemográfico y datos de contacto antes del 30 de mayo. Accede al formulario correspondiente desde el portal de tu empresa.</p>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="tag" style="background:var(--color-company-accent-tint);color:var(--color-company-accent);">RRHH</span>
+                <span class="tag">Fecha límite: 30 mayo</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="event-item">
+            <div class="event-item__date">
+              <span class="event-item__day">20</span>
+              <span class="event-item__month">JUN</span>
+            </div>
+            <div>
+              <h3 class="event-item__title">Celebración Día del Padre — Grupo Corporativo</h3>
+              <p class="event-item__desc">Actividad especial para los papás colaboradores del grupo. Detalles a confirmar por correo corporativo. ¡Gracias por hacer grande esta familia!</p>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="tag" style="background:var(--color-company-accent-tint);color:var(--color-company-accent);">Cultura</span>
+                <span class="tag">Todas las empresas</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="event-item">
+            <div class="event-item__date">
+              <span class="event-item__day">15</span>
+              <span class="event-item__month">AGO</span>
+            </div>
+            <div>
+              <h3 class="event-item__title">Lanzamiento de nueva línea Essenza Foods</h3>
+              <p class="event-item__desc">Presentación oficial del nuevo portafolio de productos al equipo interno antes del lanzamiento al mercado. Evento presencial en la Sede Comercial. Invitación abierta a toda la nómina.</p>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="tag" style="background:var(--color-company-accent-tint);color:var(--color-company-accent);">Essenza Foods</span>
+                <span class="tag">Presencial · Medellín</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="event-item">
+            <div class="event-item__date">
+              <span class="event-item__day">05</span>
+              <span class="event-item__month">DIC</span>
+            </div>
+            <div>
+              <h3 class="event-item__title">Fiesta de Fin de Año — Grupo MC</h3>
+              <p class="event-item__desc">Celebración de cierre de año para todos los colaboradores y sus familias. El lugar y programa se anunciarán en octubre. ¡El evento más esperado del año!</p>
+              <div class="flex gap-2 mt-2 flex-wrap">
+                <span class="tag" style="background:var(--color-company-accent-tint);color:var(--color-company-accent);">Todas las empresas</span>
+                <span class="tag">Por confirmar</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div>
+          <p class="site-footer__brand-name">Interactúa</p>
+          <p class="site-footer__brand-desc">Cultura, employer branding y reconocimientos del Grupo MC Intranet.</p>
+        </div>
+        <div>
+          <p class="site-footer__locations-title">Nuestras Sedes</p>
+          <div class="site-footer__locations">
+            <div class="location-card">
+              <div class="location-card__icon"><i data-lucide="map-pin"></i></div>
+              <p class="location-card__company">Administrativa</p>
+              <p class="location-card__name">Sede Administrativa</p>
+              <p class="location-card__address">Calle 49 # 77A - 19<br>Barrio Laureles (Estadio)<br>Medellín, Antioquia</p>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="location-card__link">Ver en Maps <i data-lucide="external-link"></i></a>
+            </div>
+            <div class="location-card">
+              <div class="location-card__icon"><i data-lucide="map-pin"></i></div>
+              <p class="location-card__company">Essenza Foods</p>
+              <p class="location-card__name">Sede Comercial</p>
+              <p class="location-card__address">Carrera 74 # 48B - 59<br>Barrio Laureles (Estadio)<br>Medellín, Antioquia</p>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="location-card__link">Ver en Maps <i data-lucide="external-link"></i></a>
+            </div>
+            <div class="location-card">
+              <div class="location-card__icon"><i data-lucide="map-pin"></i></div>
+              <p class="location-card__company">Budefry</p>
+              <p class="location-card__name">Sede Producción</p>
+              <p class="location-card__address">Parque Industrial Rosendal Bod 18<br>Km 24 Vda La Clara<br>Guarne, Antioquia</p>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="location-card__link">Ver en Maps <i data-lucide="external-link"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site-footer__bottom">
+        <p class="site-footer__copy">© 2026 Grupo MC Intranet. Todos los derechos reservados.</p>
+        <p class="site-footer__nit">NIT Grupo: 901 967 530-0</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    lucide.createIcons();
+    const toggle = document.getElementById('nav-toggle');
+    const links = document.getElementById('nav-links');
+    toggle.addEventListener('click', () => {
+      const isOpen = links.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+  </script>
+</body>
+</html>

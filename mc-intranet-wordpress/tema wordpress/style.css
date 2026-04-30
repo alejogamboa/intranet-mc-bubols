@@ -1,0 +1,21 @@
+/*
+Theme Name: MC Intranet WordPress
+Theme URI: https://example.com/mc-intranet
+Author: MC Group
+Author URI: https://example.com
+Description: Tema corporativo de la Intranet MC para Projection Anstra, Essenza Foods y Budefry.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 8.1
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: mc-intranet
+Tags: intranet, multi-company, responsive, accessibility
+*/
+
+/*
+ * NOTE: All styles are loaded via wp_enqueue_scripts in functions.php.
+ * This file intentionally contains only the theme header comment.
+ * Do NOT add @import rules here.
+ */

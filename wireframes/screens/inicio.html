@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio — MC Intranet</title>
+  <link rel="stylesheet" href="../css/design-tokens.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       NAVEGACIÓN GLOBAL
+       ═══════════════════════════════════════════════ -->
+  <nav class="global-nav" role="navigation" aria-label="Navegación principal">
+    <div class="container global-nav__inner">
+      <a href="./inicio.html" class="global-nav__logo" aria-label="MC Intranet — Inicio">
+        <div class="global-nav__logo-icon">
+          <i data-lucide="globe"></i>
+        </div>
+        <div class="global-nav__logo-text">
+          <span class="global-nav__logo-name">MC Intranet</span>
+          <span class="global-nav__logo-sub">Portal Corporativo</span>
+        </div>
+      </a>
+
+      <ul class="global-nav__links" role="list" id="nav-links">
+        <li><a href="./inicio.html" class="global-nav__link" aria-current="page"><i data-lucide="home"></i> Inicio</a></li>
+        <li><a href="./projection-anstra.html" class="global-nav__link"><i data-lucide="building-2"></i> Projection Anstra</a></li>
+        <li><a href="./essenza-foods.html" class="global-nav__link"><i data-lucide="shopping-bag"></i> Essenza Foods</a></li>
+        <li><a href="./budefry.html" class="global-nav__link"><i data-lucide="factory"></i> Budefry</a></li>
+        <li><a href="./interactua.html" class="global-nav__link"><i data-lucide="sparkles"></i> Interactúa</a></li>
+      </ul>
+
+      <div class="global-nav__company-badge">Multicompañía</div>
+
+      <button class="global-nav__toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-links" id="nav-toggle">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ═══════════════════════════════════════════════
+         HERO
+         ═══════════════════════════════════════════════ -->
+    <section class="page-hero" aria-labelledby="hero-title">
+      <div class="page-hero__pattern"></div>
+      <div class="container">
+        <div class="page-hero__inner">
+          <span class="page-hero__eyebrow">
+            <i data-lucide="globe"></i>
+            Portal Transversal · Multicompañía
+          </span>
+          <h1 class="page-hero__title" id="hero-title">
+            Bienvenido a<br><span>MC Intranet</span>
+          </h1>
+          <p class="page-hero__description">
+            Accede a los formularios, gestiones y recursos del grupo corporativo. Selecciona tu empresa o utiliza los servicios transversales.
+          </p>
+          <nav class="quick-access" aria-label="Acceso rápido a empresas">
+            <a href="./projection-anstra.html" class="quick-access__item"><i data-lucide="building-2"></i> Projection Anstra</a>
+            <a href="./essenza-foods.html" class="quick-access__item"><i data-lucide="shopping-bag"></i> Essenza Foods</a>
+            <a href="./budefry.html" class="quick-access__item"><i data-lucide="factory"></i> Budefry</a>
+            <a href="./interactua.html" class="quick-access__item"><i data-lucide="sparkles"></i> Interactúa</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         SECCIÓN: ADMINISTRACIÓN
+         ═══════════════════════════════════════════════ -->
+    <section class="section-block" aria-labelledby="admin-title">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-header__icon">
+            <i data-lucide="briefcase"></i>
+          </div>
+          <div class="section-header__text">
+            <p class="section-header__label">Transversal</p>
+            <h2 class="section-header__title" id="admin-title">Administración</h2>
+            <p class="section-header__desc">Solicitudes de viajes, viáticos y hospedaje para todo el grupo corporativo.</p>
+          </div>
+        </div>
+
+        <div class="form-cards-grid">
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="plane"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Solicitud de Tiquetes Aéreos y Terrestres</h3>
+              <p class="form-card__desc">Gestiona tus tiquetes aéreos y terrestres para desplazamientos corporativos nacionales.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/P5G3SVjKKtoYno5A8" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="wallet"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Solicitud de Viáticos</h3>
+              <p class="form-card__desc">Solicita viáticos para alimentación, transporte y gastos autorizados en comisiones.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/iwwYKaHEe9Ns8avP7" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="hotel"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Solicitud de Reserva de Hospedaje</h3>
+              <p class="form-card__desc">Solicita la reserva de alojamiento para viajes y comisiones autorizadas.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/ePwLxsPUGVQNxasM6" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════════
+         SECCIÓN: TIC
+         ═══════════════════════════════════════════════ -->
+    <section class="section-block" aria-labelledby="tic-title">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-header__icon">
+            <i data-lucide="monitor"></i>
+          </div>
+          <div class="section-header__text">
+            <p class="section-header__label">Transversal</p>
+            <h2 class="section-header__title" id="tic-title">TIC — Tecnologías de la Información</h2>
+            <p class="section-header__desc">Soporte técnico, gestión de usuarios y compras tecnológicas para todo el grupo.</p>
+          </div>
+        </div>
+
+        <div class="form-cards-grid">
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="life-buoy"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Soporte TIC</h3>
+              <p class="form-card__desc">Reporta incidentes técnicos, fallas de hardware o software a la mesa de ayuda corporativa.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/Jan3qP5n4zK1CkEK8" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="user-plus"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Gestión de Usuarios TIC</h3>
+              <p class="form-card__desc">Solicita creación, modificación o baja de usuarios en los sistemas corporativos.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/zgyn7vaouK9ttLKp8" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="shopping-cart"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Compras TIC</h3>
+              <p class="form-card__desc">Solicita la adquisición de equipos, licencias y accesorios tecnológicos.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/Vg93Fqsb4r7ajzsZ9" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════════
+         SECCIÓN: GESTIONES
+         ═══════════════════════════════════════════════ -->
+    <section class="section-block" aria-labelledby="ges-title">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-header__icon">
+            <i data-lucide="layers"></i>
+          </div>
+          <div class="section-header__text">
+            <p class="section-header__label">Transversal</p>
+            <h2 class="section-header__title" id="ges-title">Gestiones</h2>
+            <p class="section-header__desc">Servicios logísticos y trámites administrativos generales del grupo corporativo.</p>
+          </div>
+        </div>
+
+        <div class="form-cards-grid">
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="truck"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Solicitud de Servicio Logístico (No Venta)</h3>
+              <p class="form-card__desc">Gestiona servicios de logística interna no relacionados con procesos comerciales de venta.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/KkM9QLUoq9raV7UE9" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+
+          <article class="form-card">
+            <div class="form-card__icon"><i data-lucide="check-square"></i></div>
+            <div class="form-card__body">
+              <h3 class="form-card__title">Registro de Certificados de Votación</h3>
+              <p class="form-card__desc">Registra tu certificado de votación para cumplir con el requisito electoral corporativo.</p>
+              <span class="form-card__badge form-card__badge--form"><i data-lucide="file-text" style="width:10px;height:10px;stroke:currentColor;margin-right:2px;"></i> Google Forms</span>
+            </div>
+            <div class="form-card__footer">
+              <a href="https://forms.gle/rJcfzBHREexeLEpx5" target="_blank" rel="noopener" class="btn btn-outline btn-full">
+                Abrir formulario <i data-lucide="arrow-right"></i>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════════
+         SECCIÓN: PORTALES DE EMPRESA
+         ═══════════════════════════════════════════════ -->
+    <section class="section-block" aria-labelledby="portals-title" style="background-color:var(--color-surface);">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-header__icon">
+            <i data-lucide="grid-2x2"></i>
+          </div>
+          <div class="section-header__text">
+            <p class="section-header__label">Portales</p>
+            <h2 class="section-header__title" id="portals-title">Acceso por Empresa</h2>
+            <p class="section-header__desc">Selecciona tu empresa para acceder a los formularios y recursos específicos de RRHH y gestión interna.</p>
+          </div>
+        </div>
+
+        <div class="company-portals-grid">
+          <!-- Projection Anstra -->
+          <a href="./projection-anstra.html" class="company-card">
+            <div class="company-card__header">
+              <div class="company-card__logo" style="background:linear-gradient(135deg,#1A2E52,#253E6E);">
+                <i data-lucide="building-2"></i>
+              </div>
+              <div>
+                <h3 class="company-card__name">Projection Anstra</h3>
+                <p class="company-card__desc">Gestión administrativa, contabilidad y recursos humanos del grupo corporativo.</p>
+              </div>
+            </div>
+            <div class="company-card__body">
+              <div class="company-card__tags">
+                <span class="tag">RRHH</span>
+                <span class="tag">Contabilidad</span>
+                <span class="tag">Administración</span>
+              </div>
+            </div>
+            <div class="company-card__footer">
+              <span class="company-card__link" style="color:#1A2E52;">
+                Ver portal <i data-lucide="arrow-right"></i>
+              </span>
+              <span style="font-size:var(--text-xs);color:var(--color-text-muted);">4 formularios</span>
+            </div>
+          </a>
+
+          <!-- Essenza Foods -->
+          <a href="./essenza-foods.html" class="company-card">
+            <div class="company-card__header">
+              <div class="company-card__logo" style="background:linear-gradient(135deg,#1B6B45,#237D53);">
+                <i data-lucide="shopping-bag"></i>
+              </div>
+              <div>
+                <h3 class="company-card__name">Essenza Foods</h3>
+                <p class="company-card__desc">Gestión de marca, comercial, mercadeo y ventas de la línea de alimentos.</p>
+              </div>
+            </div>
+            <div class="company-card__body">
+              <div class="company-card__tags">
+                <span class="tag">RRHH</span>
+                <span class="tag">Comercial</span>
+                <span class="tag">Mercadeo</span>
+              </div>
+            </div>
+            <div class="company-card__footer">
+              <span class="company-card__link" style="color:#1B6B45;">
+                Ver portal <i data-lucide="arrow-right"></i>
+              </span>
+              <span style="font-size:var(--text-xs);color:var(--color-text-muted);">4 formularios</span>
+            </div>
+          </a>
+
+          <!-- Budefry -->
+          <a href="./budefry.html" class="company-card">
+            <div class="company-card__header">
+              <div class="company-card__logo" style="background:linear-gradient(135deg,#2D3748,#3D4F66);">
+                <i data-lucide="factory"></i>
+              </div>
+              <div>
+                <h3 class="company-card__name">Budefry SAS</h3>
+                <p class="company-card__desc">Operación, logística y procesos de producción industrial.</p>
+              </div>
+            </div>
+            <div class="company-card__body">
+              <div class="company-card__tags">
+                <span class="tag">RRHH</span>
+                <span class="tag">Producción</span>
+                <span class="tag">Operaciones</span>
+              </div>
+            </div>
+            <div class="company-card__footer">
+              <span class="company-card__link" style="color:#2D3748;">
+                Ver portal <i data-lucide="arrow-right"></i>
+              </span>
+              <span style="font-size:var(--text-xs);color:var(--color-text-muted);">4 formularios</span>
+            </div>
+          </a>
+
+          <!-- Interactúa -->
+          <a href="./interactua.html" class="company-card">
+            <div class="company-card__header">
+              <div class="company-card__logo" style="background:linear-gradient(135deg,#4338CA,#5048D6);">
+                <i data-lucide="sparkles"></i>
+              </div>
+              <div>
+                <h3 class="company-card__name">Interactúa</h3>
+                <p class="company-card__desc">Cultura corporativa, employer branding, reconocimientos y eventos del grupo.</p>
+              </div>
+            </div>
+            <div class="company-card__body">
+              <div class="company-card__tags">
+                <span class="tag">Reconocimientos</span>
+                <span class="tag">Eventos</span>
+                <span class="tag">Cultura</span>
+              </div>
+            </div>
+            <div class="company-card__footer">
+              <span class="company-card__link" style="color:#4338CA;">
+                Ver portal <i data-lucide="arrow-right"></i>
+              </span>
+              <span style="font-size:var(--text-xs);color:var(--color-text-muted);">Novedades</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div>
+          <p class="site-footer__brand-name">MC Intranet</p>
+          <p class="site-footer__brand-desc">Portal corporativo del grupo multicompañía. Proyección Anstra · Essenza Foods · Budefry.</p>
+        </div>
+        <div>
+          <p class="site-footer__locations-title">Nuestras Sedes</p>
+          <div class="site-footer__locations">
+            <div class="location-card">
+              <div class="location-card__icon"><i data-lucide="map-pin"></i></div>
+              <p class="location-card__company">Administrativa</p>
+              <p class="location-card__name">Sede Administrativa</p>
+              <p class="location-card__address">Calle 49 # 77A - 19<br>Barrio Laureles (Estadio)<br>Medellín, Antioquia</p>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="location-card__link">
+                Ver en Maps <i data-lucide="external-link"></i>
+              </a>
+            </div>
+            <div class="location-card">
+              <div class="location-card__icon"><i data-lucide="map-pin"></i></div>
+              <p class="location-card__company">Essenza Foods</p>
+              <p class="location-card__name">Sede Comercial</p>
+              <p class="location-card__address">Carrera 74 # 48B - 59<br>Barrio Laureles (Estadio)<br>Medellín, Antioquia</p>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="location-card__link">
+                Ver en Maps <i data-lucide="external-link"></i>
+              </a>
+            </div>
+            <div class="location-card">
+              <div class="location-card__icon"><i data-lucide="map-pin"></i></div>
+              <p class="location-card__company">Budefry</p>
+              <p class="location-card__name">Sede Producción</p>
+              <p class="location-card__address">Parque Industrial Rosendal Bod 18<br>Km 24 Vda La Clara<br>Guarne, Antioquia</p>
+              <a href="https://maps.google.com" target="_blank" rel="noopener" class="location-card__link">
+                Ver en Maps <i data-lucide="external-link"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site-footer__bottom">
+        <p class="site-footer__copy">© 2026 Grupo MC Intranet. Todos los derechos reservados.</p>
+        <p class="site-footer__nit">NIT Grupo: 901 967 530-0</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    lucide.createIcons();
+    // Mobile nav toggle
+    const toggle = document.getElementById('nav-toggle');
+    const links = document.getElementById('nav-links');
+    toggle.addEventListener('click', () => {
+      const isOpen = links.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+  </script>
+</body>
+</html>

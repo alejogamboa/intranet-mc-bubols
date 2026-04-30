@@ -1,0 +1,25 @@
+{
+  "servers": {
+    "elementor-mcp": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "exec", "-i",
+        "-e", "WP_URL",
+        "-e", "WP_USERNAME",
+        "-e", "WP_APP_PASSWORD",
+        "-e", "MCP_PROTOCOL_VERSION",
+        "-e", "MCP_LOG_FILE",
+        "mc-intranet-wordpress-wordpress-1",
+        "node", "/var/www/html/wp-content/plugins/elementor-mcp-1.5.0/bin/mcp-proxy.mjs"
+      ],
+      "env": {
+        "WP_URL": "http://localhost",
+        "WP_USERNAME": "alejogamboa@gmail.com",
+        "WP_APP_PASSWORD": "z$Da%75hYcZI7fjTD@",
+        "MCP_PROTOCOL_VERSION": "2024-11-05",
+        "MCP_LOG_FILE": "/tmp/elementor-mcp-debug.log"
+      }
+    }
+  }
+}
