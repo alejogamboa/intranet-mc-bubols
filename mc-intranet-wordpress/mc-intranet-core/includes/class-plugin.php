@@ -34,6 +34,7 @@ class MC_Intranet_Plugin {
         new MC_Intranet_Post_Types();
         new MC_Intranet_Taxonomies();
         new MC_Intranet_Shortcodes();
+        new MC_Intranet_Access_Control();
         new MC_Intranet_Meta_Boxes();
         new MC_Intranet_Company_Context();
         new MC_Intranet_Directorio_Importer();
@@ -44,7 +45,10 @@ class MC_Intranet_Plugin {
     public static function activate(): void {
         // Registrar CPTs y taxonomías temporalmente para que flush_rewrite_rules funcione.
         $pt = new MC_Intranet_Post_Types();
+        $tax = new MC_Intranet_Taxonomies();
         $pt->register();
+        $tax->register();
+        MC_Intranet_Access_Control::activate();
         flush_rewrite_rules();
     }
 

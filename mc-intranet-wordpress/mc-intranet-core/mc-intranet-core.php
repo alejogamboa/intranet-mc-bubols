@@ -30,6 +30,7 @@ require_once MC_CORE_DIR . 'includes/class-plugin.php';
 require_once MC_CORE_DIR . 'includes/class-post-types.php';
 require_once MC_CORE_DIR . 'includes/class-taxonomies.php';
 require_once MC_CORE_DIR . 'includes/class-shortcodes.php';
+require_once MC_CORE_DIR . 'includes/class-access-control.php';
 require_once MC_CORE_DIR . 'includes/class-meta-boxes.php';
 require_once MC_CORE_DIR . 'includes/class-company-context.php';
 require_once MC_CORE_DIR . 'includes/class-directorio-importer.php';

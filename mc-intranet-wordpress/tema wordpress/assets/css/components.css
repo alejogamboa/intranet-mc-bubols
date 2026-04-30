@@ -201,6 +201,144 @@
 /* ================================================================
    HERO DE PÁGINA
    ================================================================ */
+.mc-auth-shell {
+  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16) var(--space-4);
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.85), transparent 35%),
+    linear-gradient(135deg, rgba(26,46,82,0.10) 0%, rgba(35,125,83,0.10) 100%),
+    #f4f7fb;
+}
+
+.mc-auth-card {
+  width: min(100%, 520px);
+  display: grid;
+  gap: var(--space-5);
+  background-color: #fff;
+  border: 1px solid rgba(26,46,82,0.08);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  padding: clamp(24px, 4vw, 40px);
+}
+
+.mc-auth-shell__eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background-color: rgba(26,46,82,0.08);
+  color: var(--color-company);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mc-auth-shell__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.mc-auth-shell__subtitle,
+.mc-auth-shell__meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.mc-auth-form form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.mc-auth-form label {
+  display: inline-block;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.mc-auth-form input[type="text"],
+.mc-auth-form input[type="password"] {
+  width: 100%;
+  border: 1px solid rgba(26,46,82,0.12);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1rem;
+  font-size: var(--text-base);
+  transition: var(--transition-colors);
+}
+
+.mc-auth-form input[type="text"]:focus,
+.mc-auth-form input[type="password"]:focus {
+  outline: none;
+  border-color: var(--color-company);
+  box-shadow: 0 0 0 4px rgba(26,46,82,0.12);
+}
+
+.mc-auth-form .login-remember {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.mc-auth-form .login-submit {
+  margin: 0;
+}
+
+.mc-auth-form .button,
+.mc-auth-actions .button,
+.mc-auth-state .button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.85rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-company);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mc-auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.mc-auth-actions .button-secondary {
+  background-color: rgba(26,46,82,0.08);
+  color: var(--color-company);
+}
+
+.mc-auth-state {
+  padding: var(--space-8) 0;
+}
+
+@media (max-width: 640px) {
+  .mc-auth-shell {
+    padding: var(--space-10) var(--space-3);
+  }
+
+  .mc-auth-actions,
+  .mc-auth-actions .button {
+    width: 100%;
+  }
+}
+
 .page-hero {
   background: linear-gradient(135deg, var(--color-company) 0%, var(--color-company-dark) 100%);
   padding: var(--space-16) 0 var(--space-12);

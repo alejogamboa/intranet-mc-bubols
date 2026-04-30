@@ -32,7 +32,7 @@ class MC_Intranet_Taxonomies {
             ],
             'public'       => false,
             'show_ui'      => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'hierarchical' => false,
             'rewrite'      => false,
         ] );
@@ -46,7 +46,7 @@ class MC_Intranet_Taxonomies {
             ],
             'public'       => false,
             'show_ui'      => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'hierarchical' => false,
             'rewrite'      => false,
         ] );

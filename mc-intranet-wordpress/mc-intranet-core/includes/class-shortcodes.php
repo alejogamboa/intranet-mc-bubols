@@ -27,6 +27,8 @@ class MC_Intranet_Shortcodes {
         add_shortcode( 'mc_eventos',                  [ $this, 'shortcode_eventos' ] );
         add_shortcode( 'mc_context_alert',            [ $this, 'shortcode_context_alert' ] );
         add_shortcode( 'mc_directorio_contactos',     [ $this, 'shortcode_directorio_contactos' ] );
+        add_shortcode( 'mc_login_screen',             [ $this, 'shortcode_login_screen' ] );
+        add_shortcode( 'mc_access_denied',            [ $this, 'shortcode_access_denied' ] );
     }
 
     // ─── [mc_formularios] ────────────────────────────────────────────────────
@@ -514,6 +516,109 @@ class MC_Intranet_Shortcodes {
 
         ob_start();
         include MC_CORE_TEMPLATES . 'contact-directory-tabs.php';
+
+        return ob_get_clean();
+    }
+
+    // ─── [mc_login_screen] ──────────────────────────────────────────────────
+
+    public function shortcode_login_screen( $atts ): string {
+        $atts = shortcode_atts( [
+            'title'    => __( 'Ingresa a la intranet', 'mc-intranet-core' ),
+            'subtitle' => __( 'Autentícate con tu usuario corporativo para acceder al contenido interno.', 'mc-intranet-core' ),
+        ], $atts, 'mc_login_screen' );
+
+        $redirect_to = MC_Intranet_Access_Control::get_requested_redirect_target();
+        $message_key = isset( $_GET['mc_login'] ) ? sanitize_key( wp_unslash( $_GET['mc_login'] ) ) : '';
+        $messages    = [
+            'failed'    => __( 'No fue posible iniciar sesión con esas credenciales. Verifica tu usuario y contraseña.', 'mc-intranet-core' ),
+            'loggedout' => __( 'Tu sesión fue cerrada correctamente.', 'mc-intranet-core' ),
+        ];
+
+        if ( is_user_logged_in() ) {
+            if ( current_user_can( MC_Intranet_Access_Control::ACCESS_CAPABILITY ) ) {
+                return sprintf(
+                    '<div class="mc-auth-state"><p>%1$s</p><p><a class="button" href="%2$s">%3$s</a></p></div>',
+                    esc_html__( 'Ya tienes una sesión activa con acceso a la intranet.', 'mc-intranet-core' ),
+                    esc_url( $redirect_to ?: home_url( '/' ) ),
+                    esc_html__( 'Continuar', 'mc-intranet-core' )
+                );
+            }
+
+            return do_shortcode( '[mc_access_denied]' );
+        }
+
+        ob_start();
+        ?>
+        <section class="mc-auth-shell mc-auth-shell--login">
+            <div class="mc-auth-card">
+                <p class="mc-auth-shell__eyebrow"><?php esc_html_e( 'MC Intranet', 'mc-intranet-core' ); ?></p>
+                <h1 class="mc-auth-shell__title"><?php echo esc_html( $atts['title'] ); ?></h1>
+                <p class="mc-auth-shell__subtitle"><?php echo esc_html( $atts['subtitle'] ); ?></p>
+
+                <?php if ( isset( $messages[ $message_key ] ) ) : ?>
+                    <div class="alert alert--warning" role="alert">
+                        <div>
+                            <p class="alert__title"><?php esc_html_e( 'Atención', 'mc-intranet-core' ); ?></p>
+                            <p class="alert__body"><?php echo esc_html( $messages[ $message_key ] ); ?></p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="mc-auth-form">
+                    <?php
+                    wp_login_form( [
+                        'echo'           => true,
+                        'remember'       => true,
+                        'redirect'       => $redirect_to ?: home_url( '/' ),
+                        'label_username' => __( 'Correo o usuario', 'mc-intranet-core' ),
+                        'label_password' => __( 'Contraseña', 'mc-intranet-core' ),
+                        'label_remember' => __( 'Mantener mi sesión', 'mc-intranet-core' ),
+                        'label_log_in'   => __( 'Ingresar', 'mc-intranet-core' ),
+                    ] );
+                    ?>
+                </div>
+
+                <p class="mc-auth-shell__meta">
+                    <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php esc_html_e( '¿Olvidaste tu contraseña?', 'mc-intranet-core' ); ?></a>
+                </p>
+            </div>
+        </section>
+        <?php
+
+        return ob_get_clean();
+    }
+
+    // ─── [mc_access_denied] ─────────────────────────────────────────────────
+
+    public function shortcode_access_denied( $atts ): string {
+        $atts = shortcode_atts( [
+            'title' => __( 'Acceso denegado', 'mc-intranet-core' ),
+            'body'  => __( 'Tu usuario inició sesión correctamente, pero aún no tiene habilitado el acceso a la intranet. Solicita autorización al equipo administrador.', 'mc-intranet-core' ),
+        ], $atts, 'mc_access_denied' );
+
+        $logout_url    = wp_logout_url( add_query_arg( 'mc_login', 'loggedout', MC_Intranet_Access_Control::get_login_page_url() ) );
+        $support_email = sanitize_email( (string) get_option( 'admin_email' ) );
+
+        ob_start();
+        ?>
+        <section class="mc-auth-shell mc-auth-shell--denied">
+            <div class="mc-auth-card">
+                <p class="mc-auth-shell__eyebrow"><?php esc_html_e( 'MC Intranet', 'mc-intranet-core' ); ?></p>
+                <h1 class="mc-auth-shell__title"><?php echo esc_html( $atts['title'] ); ?></h1>
+                <p class="mc-auth-shell__subtitle"><?php echo esc_html( $atts['body'] ); ?></p>
+
+                <div class="mc-auth-actions">
+                    <a class="button" href="mailto:<?php echo esc_attr( $support_email ); ?>"><?php esc_html_e( 'Solicitar acceso', 'mc-intranet-core' ); ?></a>
+                    <?php if ( is_user_logged_in() ) : ?>
+                        <a class="button button-secondary" href="<?php echo esc_url( $logout_url ); ?>"><?php esc_html_e( 'Cerrar sesión', 'mc-intranet-core' ); ?></a>
+                    <?php else : ?>
+                        <a class="button button-secondary" href="<?php echo esc_url( MC_Intranet_Access_Control::get_login_page_url() ); ?>"><?php esc_html_e( 'Volver al login', 'mc-intranet-core' ); ?></a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
+        <?php
 
         return ob_get_clean();
     }
