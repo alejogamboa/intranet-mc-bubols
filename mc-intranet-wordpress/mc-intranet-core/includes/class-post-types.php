@@ -78,7 +78,7 @@ class MC_Intranet_Post_Types
       'show_in_rest'    => false,
       'menu_icon'       => 'dashicons-calendar-alt',
       'menu_position'   => 26,
-      'supports'        => ['title', 'editor', 'thumbnail'],
+      'supports'        => ['title', 'editor'],
       'rewrite'         => false,
       'has_archive'     => false,
     ]);

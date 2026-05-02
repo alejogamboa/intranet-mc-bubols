@@ -30,7 +30,7 @@ function mc_intranet_theme_setup() {
 
 add_action( 'wp_enqueue_scripts', 'mc_intranet_enqueue_scripts' );
 function mc_intranet_enqueue_scripts() {
-    $ver = '2.0.3';
+    $ver = '2.0.4';
     $dir = get_template_directory_uri();
 
     // 1. Design tokens (base de variables CSS — siempre primero)
@@ -44,6 +44,9 @@ function mc_intranet_enqueue_scripts() {
 
     // 4. Hamburguesa + aria-expanded (footer, sin jQuery como dep innecesaria)
     wp_enqueue_script( 'mc-nav-toggle', $dir . '/assets/js/nav-toggle.js', [], $ver, true );
+
+    // 5. Lightbox para galeria del shortcode [mc_eventos]
+    wp_enqueue_script( 'mc-event-gallery-lightbox', $dir . '/assets/js/event-gallery-lightbox.js', [], $ver, true );
 }
 
 // ─── Contexto de empresa ─────────────────────────────────────────────────────

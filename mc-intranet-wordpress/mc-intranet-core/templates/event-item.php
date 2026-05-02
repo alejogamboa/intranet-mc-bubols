@@ -17,33 +17,123 @@ $mode_labels = [
 ];
 $mode_label = $mode_labels[ $event_data['mode'] ] ?? esc_html( $event_data['mode'] );
 
-// Formatear fecha: YYYY-MM-DD → día mes año
-$date_obj     = $event_data['date'] ? date_create( $event_data['date'] ) : false;
-$date_display = $date_obj ? date_format( $date_obj, 'd/m/Y' ) : $event_data['date'];
+// Formatear fecha para UI: chip con dia y mes.
+$date_obj      = $event_data['date'] ? date_create( $event_data['date'] ) : false;
+$date_display  = $date_obj ? date_format( $date_obj, 'd/m/Y' ) : $event_data['date'];
+$date_day      = $date_obj ? date_format( $date_obj, 'd' ) : $date_display;
+$date_month    = $date_obj ? strtoupper( wp_date( 'M', $date_obj->getTimestamp() ) ) : '';
+$mode_location = trim( (string) $event_data['location'] );
+$gallery       = is_array( $event_data['gallery'] ?? null ) ? $event_data['gallery'] : [];
+
+$title_words       = preg_split( '/\s+/', trim( wp_strip_all_tags( (string) $event_data['title'] ) ) );
+$image_monogram    = '';
+$image_words_count = is_array( $title_words ) ? count( $title_words ) : 0;
+
+if ( is_array( $title_words ) ) {
+    foreach ( $title_words as $word ) {
+        if ( '' === $word ) {
+            continue;
+        }
+
+        $image_monogram .= strtoupper( substr( $word, 0, 1 ) );
+
+        if ( strlen( $image_monogram ) >= 2 ) {
+            break;
+        }
+    }
+}
+
+$image_monogram = $image_monogram ? $image_monogram : 'EV';
+$media_class    = 'event-item__media' . ( $gallery ? '' : ' event-item__media--placeholder' );
 
 $item_class = 'event-item';
 if ( $event_data['featured'] ) {
     $item_class .= ' event-item--featured';
 }
+
+$primary_image = $gallery[0] ?? null;
+$secondary_images = array_slice( $gallery, 1, 2 );
+$extra_images = max( count( $gallery ) - 3, 0 );
+$lightbox_items = [];
+
+foreach ( $gallery as $image ) {
+    $lightbox_items[] = [
+        'url' => (string) ( $image['url'] ?? '' ),
+        'alt' => trim( (string) ( $image['alt'] ?? '' ) ) ?: (string) $event_data['title'],
+    ];
+}
+
+$lightbox_gallery = esc_attr( wp_json_encode( $lightbox_items ) ?: '[]' );
 ?>
-<div class="<?php echo esc_attr( $item_class ); ?>">
-    <div class="event-item__dot" aria-hidden="true"></div>
-    <div class="event-item__body">
-        <p class="event-item__date"><?php echo esc_html( $date_display ); ?></p>
-        <h3 class="event-item__title"><?php echo esc_html( $event_data['title'] ); ?></h3>
-        <div class="event-item__tags">
-            <?php if ( $mode_label ) : ?>
-            <span class="tag"><?php echo esc_html( $mode_label ); ?></span>
-            <?php endif; ?>
-            <?php if ( $event_data['location'] ) : ?>
-            <span class="tag">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                <?php echo esc_html( $event_data['location'] ); ?>
-            </span>
+<article class="<?php echo esc_attr( $item_class ); ?>">
+    <div class="event-item__main">
+        <div class="event-item__date" aria-label="<?php echo esc_attr( $date_display ); ?>">
+            <span class="event-item__day"><?php echo esc_html( $date_day ); ?></span>
+            <?php if ( $date_month ) : ?>
+            <span class="event-item__month"><?php echo esc_html( $date_month ); ?></span>
             <?php endif; ?>
         </div>
-        <?php if ( $event_data['content'] ) : ?>
-        <div class="event-item__content"><?php echo wp_kses_post( $event_data['content'] ); ?></div>
-        <?php endif; ?>
+        <div class="event-item__content">
+            <?php if ( $mode_location ) : ?>
+            <p class="event-item__eyebrow">
+                <span class="event-item__eyebrow-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                        <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Zm0-9a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span><?php echo esc_html( $mode_location ); ?></span>
+            </p>
+            <?php endif; ?>
+            <?php if ( $event_data['featured'] ) : ?>
+            <p class="event-item__meta">
+                <span class="event-item__featured-badge">Destacado</span>
+            </p>
+            <?php endif; ?>
+            <h3 class="event-item__title"><?php echo esc_html( $event_data['title'] ); ?></h3>
+            <?php if ( $event_data['content'] ) : ?>
+            <div class="event-item__desc"><?php echo wp_kses_post( $event_data['content'] ); ?></div>
+            <?php endif; ?>
+            <?php if ( $event_data['mode'] ) : ?>
+            <div class="event-item__details" aria-label="Modalidad del evento">
+                <span class="event-item__detail-pill"><?php echo esc_html( $mode_label ); ?></span>
+            </div>
+            <?php endif; ?>
+        </div>
     </div>
-</div>
+    <figure class="<?php echo esc_attr( $media_class ); ?>">
+        <?php if ( $primary_image ) : ?>
+        <div class="event-item__gallery-grid">
+            <div class="event-item__gallery-item event-item__gallery-item--primary">
+                <img class="event-item__image" src="<?php echo esc_url( (string) $primary_image['url'] ); ?>" alt="<?php echo esc_attr( trim( (string) ( $primary_image['alt'] ?? '' ) ) ?: (string) $event_data['title'] ); ?>" loading="lazy" decoding="async" />
+            </div>
+            <?php foreach ( $secondary_images as $index => $image ) : ?>
+            <div class="event-item__gallery-item event-item__gallery-item--secondary<?php echo $extra_images > 0 && 1 === $index ? ' event-item__gallery-item--more' : ''; ?>">
+                <?php if ( $extra_images > 0 && 1 === $index ) : ?>
+                <button
+                    type="button"
+                    class="event-item__gallery-more-trigger"
+                    data-mc-lightbox-gallery="<?php echo $lightbox_gallery; ?>"
+                    data-mc-lightbox-start-index="3"
+                    aria-label="<?php echo esc_attr( sprintf( 'Ver galería completa, %d imágenes adicionales', $extra_images ) ); ?>"
+                >
+                <?php endif; ?>
+                <img class="event-item__image" src="<?php echo esc_url( (string) $image['url'] ); ?>" alt="<?php echo esc_attr( trim( (string) ( $image['alt'] ?? '' ) ) ?: (string) $event_data['title'] ); ?>" loading="lazy" decoding="async" />
+                <?php if ( $extra_images > 0 && 1 === $index ) : ?>
+                <span class="event-item__gallery-count">+<?php echo esc_html( (string) $extra_images ); ?></span>
+                </button>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php else : ?>
+        <div class="event-item__placeholder" aria-hidden="true">
+            <span class="event-item__placeholder-mark"><?php echo esc_html( $image_monogram ); ?></span>
+            <span class="event-item__placeholder-label">Agenda MC</span>
+            <?php if ( $image_words_count > 1 ) : ?>
+            <span class="event-item__placeholder-line"></span>
+            <?php endif; ?>
+        </div>
+        <figcaption class="sr-only">Sin galería para <?php echo esc_html( $event_data['title'] ); ?></figcaption>
+        <?php endif; ?>
+    </figure>
+</article>

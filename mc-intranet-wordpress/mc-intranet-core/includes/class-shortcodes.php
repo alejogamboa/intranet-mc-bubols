@@ -298,13 +298,12 @@ class MC_Intranet_Shortcodes {
         echo '<div class="recognition-grid">';
         while ( $query->have_posts() ) {
             $query->the_post();
+            $thumbnail_id = get_post_thumbnail_id( get_the_ID() );
             $rec_data = [
-                'name'     => esc_html( get_the_title() ),
-                'role'     => esc_html( (string) get_post_meta( get_the_ID(), 'person_role', true ) ),
-                'company'  => esc_html( (string) get_post_meta( get_the_ID(), 'person_company', true ) ),
-                'type'     => esc_html( (string) get_post_meta( get_the_ID(), 'achievement_type', true ) ),
-                'excerpt'  => esc_html( (string) get_post_meta( get_the_ID(), 'achievement_excerpt', true ) ),
-                'initials' => esc_html( substr( (string) get_post_meta( get_the_ID(), 'person_initials', true ), 0, 3 ) ),
+                'name'      => esc_html( get_the_title() ),
+                'desc'      => wp_kses_post( get_the_content() ),
+                'image_url' => (string) get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' ),
+                'image_alt' => $thumbnail_id ? (string) get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ) : '',
             ];
             include MC_CORE_TEMPLATES . 'recognition-card.php';
         }
@@ -348,6 +347,34 @@ class MC_Intranet_Shortcodes {
         echo '<div class="events-timeline">';
         while ( $query->have_posts() ) {
             $query->the_post();
+            $thumbnail_id = get_post_thumbnail_id( get_the_ID() );
+            $gallery_ids = array_values( array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( get_the_ID(), 'event_gallery_ids', true ) ) ) ) );
+            $gallery = [];
+
+            foreach ( $gallery_ids as $attachment_id ) {
+                $gallery_url = wp_get_attachment_image_url( $attachment_id, 'medium_large' );
+
+                if ( ! $gallery_url ) {
+                    continue;
+                }
+
+                $gallery[] = [
+                    'url' => (string) $gallery_url,
+                    'alt' => (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+                ];
+            }
+
+            if ( [] === $gallery ) {
+                $fallback_image_url = (string) get_the_post_thumbnail_url( get_the_ID(), 'medium_large' );
+
+                if ( $fallback_image_url ) {
+                    $gallery[] = [
+                        'url' => $fallback_image_url,
+                        'alt' => $thumbnail_id ? (string) get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ) : '',
+                    ];
+                }
+            }
+
             $event_data = [
                 'title'    => esc_html( get_the_title() ),
                 'date'     => esc_html( (string) get_post_meta( get_the_ID(), 'event_date', true ) ),
@@ -355,6 +382,7 @@ class MC_Intranet_Shortcodes {
                 'location' => esc_html( (string) get_post_meta( get_the_ID(), 'event_location', true ) ),
                 'content'  => wp_kses_post( get_the_content() ),
                 'featured' => (bool) get_post_meta( get_the_ID(), 'event_featured', true ),
+                'gallery'  => $gallery,
             ];
             include MC_CORE_TEMPLATES . 'event-item.php';
         }
