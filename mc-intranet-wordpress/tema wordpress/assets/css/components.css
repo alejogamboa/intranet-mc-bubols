@@ -7,6 +7,17 @@
 /* ================================================================
    NAVEGACIÓN GLOBAL
    ================================================================ */
+.admin-bar #wpadminbar {
+  transition: transform 220ms ease, opacity 220ms ease;
+  will-change: transform;
+}
+
+html.mc-adminbar-hidden #wpadminbar {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .global-nav {
   position: sticky;
   top: 0;
