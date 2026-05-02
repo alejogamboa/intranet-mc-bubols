@@ -1637,7 +1637,7 @@
 
 .event-item__gallery-item--primary {
   grid-column: 1 / -1;
-  min-height: 312px;
+  min-height: 240px;
 }
 
 .event-item__gallery-item--more::after {

@@ -30,7 +30,7 @@ function mc_intranet_theme_setup() {
 
 add_action( 'wp_enqueue_scripts', 'mc_intranet_enqueue_scripts' );
 function mc_intranet_enqueue_scripts() {
-    $ver = '2.0.4';
+    $ver = '2.0.6';
     $dir = get_template_directory_uri();
 
     // 1. Design tokens (base de variables CSS — siempre primero)

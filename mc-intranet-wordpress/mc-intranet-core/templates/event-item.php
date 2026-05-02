@@ -51,9 +51,8 @@ if ( $event_data['featured'] ) {
     $item_class .= ' event-item--featured';
 }
 
-$primary_image = $gallery[0] ?? null;
-$secondary_images = array_slice( $gallery, 1, 2 );
-$extra_images = max( count( $gallery ) - 3, 0 );
+$gallery_images = array_slice( $gallery, 0, 2 );
+$extra_images = max( count( $gallery ) - 2, 0 );
 $lightbox_items = [];
 
 foreach ( $gallery as $image ) {
@@ -101,19 +100,16 @@ $lightbox_gallery = esc_attr( wp_json_encode( $lightbox_items ) ?: '[]' );
         </div>
     </div>
     <figure class="<?php echo esc_attr( $media_class ); ?>">
-        <?php if ( $primary_image ) : ?>
+        <?php if ( $gallery_images ) : ?>
         <div class="event-item__gallery-grid">
-            <div class="event-item__gallery-item event-item__gallery-item--primary">
-                <img class="event-item__image" src="<?php echo esc_url( (string) $primary_image['url'] ); ?>" alt="<?php echo esc_attr( trim( (string) ( $primary_image['alt'] ?? '' ) ) ?: (string) $event_data['title'] ); ?>" loading="lazy" decoding="async" />
-            </div>
-            <?php foreach ( $secondary_images as $index => $image ) : ?>
-            <div class="event-item__gallery-item event-item__gallery-item--secondary<?php echo $extra_images > 0 && 1 === $index ? ' event-item__gallery-item--more' : ''; ?>">
+            <?php foreach ( $gallery_images as $index => $image ) : ?>
+            <div class="event-item__gallery-item<?php echo $extra_images > 0 && 1 === $index ? ' event-item__gallery-item--more' : ''; ?>">
                 <?php if ( $extra_images > 0 && 1 === $index ) : ?>
                 <button
                     type="button"
                     class="event-item__gallery-more-trigger"
                     data-mc-lightbox-gallery="<?php echo $lightbox_gallery; ?>"
-                    data-mc-lightbox-start-index="3"
+                    data-mc-lightbox-start-index="2"
                     aria-label="<?php echo esc_attr( sprintf( 'Ver galería completa, %d imágenes adicionales', $extra_images ) ); ?>"
                 >
                 <?php endif; ?>
