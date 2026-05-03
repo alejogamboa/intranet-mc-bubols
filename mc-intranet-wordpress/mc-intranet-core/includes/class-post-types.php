@@ -53,7 +53,7 @@ class MC_Intranet_Post_Types
       'show_in_rest'        => false,
       'menu_icon'           => 'dashicons-feedback',
       'menu_position'       => 25,
-      'supports'            => ['title', 'editor', 'thumbnail', 'page-attributes'],
+      'supports'            => ['title', 'editor', 'excerpt', 'thumbnail', 'page-attributes'],
       'capability_type'     => 'post',
       'map_meta_cap'        => true,
       'rewrite'             => false,
