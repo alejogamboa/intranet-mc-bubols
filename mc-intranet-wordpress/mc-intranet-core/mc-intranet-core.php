@@ -34,6 +34,7 @@ require_once MC_CORE_DIR . 'includes/class-access-control.php';
 require_once MC_CORE_DIR . 'includes/class-meta-boxes.php';
 require_once MC_CORE_DIR . 'includes/class-company-context.php';
 require_once MC_CORE_DIR . 'includes/class-directorio-importer.php';
+require_once MC_CORE_DIR . 'includes/class-branding-settings.php';
 
 // ─── Hooks de activación / desactivación ─────────────────────────────────────
 

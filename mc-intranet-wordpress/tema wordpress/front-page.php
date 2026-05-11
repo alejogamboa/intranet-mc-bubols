@@ -29,6 +29,25 @@ get_header(); ?>
                     <?php the_content(); ?>
                 </div>
             </article>
+
+            <div class="section-divider" aria-hidden="true"></div>
+
+            <!-- Sección: Portales de empresa (siempre dinámica para respetar ajustes de branding) -->
+            <section class="section-block" aria-labelledby="portals-title" style="background-color:var(--color-surface);">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-header__icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                        </div>
+                        <div class="section-header__text">
+                            <p class="section-header__label"><?php esc_html_e( 'Portales', 'mc-intranet' ); ?></p>
+                            <h2 class="section-header__title" id="portals-title"><?php esc_html_e( 'Acceso por Empresa', 'mc-intranet' ); ?></h2>
+                            <p class="section-header__desc"><?php esc_html_e( 'Selecciona tu empresa para acceder a los formularios y recursos específicos de RRHH y gestión interna.', 'mc-intranet' ); ?></p>
+                        </div>
+                    </div>
+                    <?php echo do_shortcode( '[mc_company_portals]' ); ?>
+                </div>
+            </section>
             <?php
         else :
             ?>

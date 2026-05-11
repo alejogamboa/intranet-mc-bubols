@@ -38,6 +38,7 @@ class MC_Intranet_Plugin {
         new MC_Intranet_Meta_Boxes();
         new MC_Intranet_Company_Context();
         new MC_Intranet_Directorio_Importer();
+        new MC_Intranet_Branding_Settings();
     }
 
     // ─── Activación / Desactivación ──────────────────────────────────────────

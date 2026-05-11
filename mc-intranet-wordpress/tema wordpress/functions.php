@@ -87,6 +87,27 @@ function mc_get_data_company_attr() {
 }
 
 /**
+ * Retorna nombre visible de empresa (editable desde admin) con fallback.
+ *
+ * @param string $company  Slug de empresa.
+ * @param string $fallback Nombre por defecto.
+ * @return string
+ */
+function mc_get_company_display_name( string $company, string $fallback ): string {
+    $slug             = sanitize_key( $company );
+    $branding_options = get_option( 'mc_intranet_company_branding', [] );
+
+    if ( is_array( $branding_options ) && isset( $branding_options[ $slug ] ) && is_array( $branding_options[ $slug ] ) ) {
+        $custom_name = sanitize_text_field( (string) ( $branding_options[ $slug ]['name'] ?? '' ) );
+        if ( '' !== $custom_name ) {
+            return $custom_name;
+        }
+    }
+
+    return $fallback;
+}
+
+/**
  * Retorna slug de empresa inferido desde un texto de etiqueta.
  *
  * @param string $label Nombre/etiqueta de empresa.
@@ -132,6 +153,18 @@ function mc_get_company_logo_url( string $company_slug ): string {
         return '';
     }
 
+    // Prioriza logo personalizado guardado en ajustes del plugin.
+    $branding_options = get_option( 'mc_intranet_company_branding', [] );
+    if ( is_array( $branding_options ) && isset( $branding_options[ $slug ] ) && is_array( $branding_options[ $slug ] ) ) {
+        $custom_logo_id = absint( $branding_options[ $slug ]['logo_id'] ?? 0 );
+        if ( $custom_logo_id > 0 ) {
+            $custom_logo_url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
+            if ( $custom_logo_url ) {
+                return $custom_logo_url;
+            }
+        }
+    }
+
     $relative = '/assets/img/logos/' . $logos[ $slug ];
     $file     = get_template_directory() . $relative;
 
@@ -167,6 +200,14 @@ function mc_get_company_logo_img( string $company, string $class = 'company-logo
         'essenza' => 'Essenza Foods',
         'budefry' => 'Budefry SAS',
     ];
+
+    $branding_options = get_option( 'mc_intranet_company_branding', [] );
+    if ( is_array( $branding_options ) && isset( $branding_options[ $slug ] ) && is_array( $branding_options[ $slug ] ) ) {
+        $custom_name = sanitize_text_field( (string) ( $branding_options[ $slug ]['name'] ?? '' ) );
+        if ( '' !== $custom_name ) {
+            $labels[ $slug ] = $custom_name;
+        }
+    }
 
     if ( null === $alt ) {
         $label = $labels[ $slug ] ?? $slug;
@@ -205,4 +246,86 @@ function mc_intranet_nav_fallback() {
         );
     }
     echo '</ul>';
+}
+
+/**
+ * Retorna true cuando el modo diagnóstico de branding está activo.
+ * Solo para administradores autenticados.
+ *
+ * @return bool
+ */
+function mc_is_branding_debug_mode(): bool {
+    if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+        return false;
+    }
+
+    if ( ! isset( $_GET['mc_branding_debug'] ) ) {
+        return false;
+    }
+
+    $flag = sanitize_text_field( wp_unslash( (string) $_GET['mc_branding_debug'] ) );
+    return '1' === $flag;
+}
+
+/**
+ * Panel de diagnóstico visual para validar branding en frontend.
+ * Actívalo con ?mc_branding_debug=1 (solo admins).
+ */
+add_action( 'wp_footer', 'mc_intranet_render_branding_debug_panel', 999 );
+function mc_intranet_render_branding_debug_panel(): void {
+    if ( ! mc_is_branding_debug_mode() ) {
+        return;
+    }
+
+    $companies = [
+        'anstra'  => 'Projection Anstra',
+        'essenza' => 'Essenza Foods',
+        'budefry' => 'Budefry SAS',
+        'interactua' => 'Interactúa',
+    ];
+
+    $raw_options = get_option( 'mc_intranet_company_branding', [] );
+    $raw_options = is_array( $raw_options ) ? $raw_options : [];
+
+    echo '<aside style="position:fixed;right:16px;bottom:16px;z-index:99999;width:min(92vw,560px);max-height:72vh;overflow:auto;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:12px;box-shadow:0 14px 30px rgba(2,6,23,.45);font:13px/1.5 -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;">';
+    echo '<div style="padding:12px 14px;border-bottom:1px solid #334155;background:#111827;">';
+    echo '<strong style="display:block;font-size:13px;">MC Branding Debug</strong>';
+    echo '<span style="font-size:12px;color:#94a3b8;">Modo diagnóstico activo con ?mc_branding_debug=1</span>';
+    echo '</div>';
+
+    echo '<div style="padding:12px 14px;">';
+    printf( '<p style="margin:0 0 8px;"><strong>Contexto actual:</strong> %s</p>', esc_html( mc_get_company_context() ) );
+    printf( '<p style="margin:0 0 12px;"><strong>Clase de ajustes cargada:</strong> %s</p>', class_exists( 'MC_Intranet_Branding_Settings' ) ? 'SI' : 'NO' );
+
+    foreach ( $companies as $slug => $fallback_name ) {
+        $display_name = mc_get_company_display_name( $slug, $fallback_name );
+        $logo_url     = mc_get_company_logo_url( $slug );
+
+        $raw_company = isset( $raw_options[ $slug ] ) && is_array( $raw_options[ $slug ] ) ? $raw_options[ $slug ] : [];
+        $raw_name    = sanitize_text_field( (string) ( $raw_company['name'] ?? '' ) );
+        $raw_bg      = sanitize_hex_color( (string) ( $raw_company['header_bg_color'] ?? '' ) );
+        $raw_text    = sanitize_hex_color( (string) ( $raw_company['header_text_color'] ?? '' ) );
+        $raw_logo_id = absint( $raw_company['logo_id'] ?? 0 );
+        $raw_eyebrow = sanitize_text_field( (string) ( $raw_company['hero_eyebrow'] ?? '' ) );
+        $raw_title_1 = sanitize_text_field( (string) ( $raw_company['hero_title_line_1'] ?? '' ) );
+        $raw_title_2 = sanitize_text_field( (string) ( $raw_company['hero_title_line_2'] ?? '' ) );
+        $raw_desc    = sanitize_textarea_field( (string) ( $raw_company['hero_description'] ?? '' ) );
+
+        echo '<div style="padding:10px 10px 11px;border:1px solid #334155;border-radius:10px;background:#111827;margin-bottom:10px;">';
+        printf( '<p style="margin:0 0 8px;"><strong>%1$s</strong> (<code style="color:#93c5fd;">%2$s</code>)</p>', esc_html( $display_name ), esc_html( $slug ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Nombre guardado:</strong> %s</p>', esc_html( '' !== $raw_name ? $raw_name : '(vacio)' ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Fondo encabezado:</strong> %s</p>', esc_html( $raw_bg ?: '(vacio)' ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Texto encabezado:</strong> %s</p>', esc_html( $raw_text ?: '(vacio)' ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Logo ID:</strong> %d</p>', $raw_logo_id );
+        printf( '<p style="margin:0 0 6px;"><strong>Hero eyebrow:</strong> %s</p>', esc_html( $raw_eyebrow ?: '(vacio)' ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Hero título L1:</strong> %s</p>', esc_html( $raw_title_1 ?: '(vacio)' ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Hero título L2:</strong> %s</p>', esc_html( $raw_title_2 ?: '(vacio)' ) );
+        printf( '<p style="margin:0 0 6px;"><strong>Hero descripción:</strong> %s</p>', esc_html( $raw_desc ?: '(vacio)' ) );
+        printf( '<p style="margin:0;"><strong>URL logo resuelta:</strong> %s</p>', esc_html( $logo_url ?: '(sin logo)' ) );
+        echo '</div>';
+    }
+
+    echo '<p style="margin:0;color:#94a3b8;font-size:12px;">Tip: para salir del modo debug, elimina el parametro <code style="color:#93c5fd;">mc_branding_debug=1</code> de la URL.</p>';
+    echo '</div>';
+    echo '</aside>';
 }

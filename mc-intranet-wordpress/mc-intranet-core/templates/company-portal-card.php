@@ -26,9 +26,23 @@ if ( 'anstra' === $portal_slug ) {
 $portal_logo = function_exists( 'mc_get_company_logo_img' ) ? mc_get_company_logo_img( $portal_slug, 'company-logo company-logo--portal', '' ) : '';
 $logo_container_class = $portal_logo ? 'company-card__logo company-card__logo--brand' : 'company-card__logo';
 $logo_container_style = $portal_logo ? '' : 'background:linear-gradient(135deg,' . esc_attr( $portal['color_start'] ) . ',' . esc_attr( $portal['color_end'] ) . ');';
+
+$header_bg_color   = sanitize_hex_color( (string) ( $portal['header_bg_color'] ?? '' ) );
+$header_text_color = sanitize_hex_color( (string) ( $portal['header_text_color'] ?? '' ) );
+
+$header_styles = [];
+if ( $header_bg_color ) {
+    $header_styles[] = 'background:' . $header_bg_color;
+}
+if ( $header_text_color ) {
+    $header_styles[] = 'color:' . $header_text_color;
+}
+$header_style_attr = implode( ';', $header_styles );
+
+$text_style_attr = $header_text_color ? 'color:' . $header_text_color : '';
 ?>
 <a href="<?php echo esc_url( $portal['url'] ); ?>" class="company-card">
-    <div class="company-card__header">
+    <div class="company-card__header"<?php if ( $header_style_attr ) : ?> style="<?php echo esc_attr( $header_style_attr ); ?>"<?php endif; ?>>
         <div class="<?php echo esc_attr( $logo_container_class ); ?>"<?php if ( $logo_container_style ) : ?> style="<?php echo esc_attr( $logo_container_style ); ?>"<?php endif; ?> aria-hidden="true">
             <?php if ( $portal_logo ) : ?>
                 <?php echo $portal_logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -37,8 +51,8 @@ $logo_container_style = $portal_logo ? '' : 'background:linear-gradient(135deg,'
             <?php endif; ?>
         </div>
         <div>
-            <h3 class="company-card__name"><?php echo esc_html( $portal['name'] ); ?></h3>
-            <p class="company-card__desc"><?php echo esc_html( $portal['desc'] ); ?></p>
+            <h3 class="company-card__name"<?php if ( $text_style_attr ) : ?> style="<?php echo esc_attr( $text_style_attr ); ?>"<?php endif; ?>><?php echo esc_html( $portal['name'] ); ?></h3>
+            <p class="company-card__desc"<?php if ( $text_style_attr ) : ?> style="<?php echo esc_attr( $text_style_attr ); ?>"<?php endif; ?>><?php echo esc_html( $portal['desc'] ); ?></p>
         </div>
     </div>
     <div class="company-card__body">

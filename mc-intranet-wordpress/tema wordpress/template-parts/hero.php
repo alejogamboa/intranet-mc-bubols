@@ -19,34 +19,66 @@ $hero_icon_map = [
 $company        = mc_get_company_context();
 $eyebrow_icon   = $hero_icon_map[ $company ] ?? $hero_icon_map['default'];
 $eyebrow_logo   = mc_get_company_logo_img( $company, 'company-logo company-logo--eyebrow', '' );
+$anstra_name    = mc_get_company_display_name( 'anstra', 'Projection Anstra' );
+$essenza_name   = mc_get_company_display_name( 'essenza', 'Essenza Foods' );
+$budefry_name   = mc_get_company_display_name( 'budefry', 'Budefry SAS' );
 
-$eyebrow_map    = [
-    'anstra'     => 'Portal Empresarial · NIT 901 967 530-0',
-    'essenza'    => 'Portal Empresarial · NIT 901 971 854-7',
-    'budefry'    => 'Portal Empresarial · NIT 901 565 887-9',
-    'interactua' => 'Interactúa · Cultura Corporativa',
-    'default'    => 'Portal Transversal · Multicompañía',
+$hero_company_defaults = [
+    'anstra'     => [
+        'hero_eyebrow'      => 'Portal Empresarial · NIT 901 967 530-0',
+        'hero_title_line_1' => 'Projection',
+        'hero_title_line_2' => 'Anstra',
+        'hero_description'  => 'Portal de gestión administrativa, contabilidad y recursos humanos. Accede a todos los formularios y documentos internos de la empresa.',
+    ],
+    'essenza'    => [
+        'hero_eyebrow'      => 'Portal Empresarial · NIT 901 971 854-7',
+        'hero_title_line_1' => 'Essenza',
+        'hero_title_line_2' => 'Foods',
+        'hero_description'  => 'Portal de gestión comercial, mercadeo, marca y recursos humanos de Essenza Foods. Accede a todos tus formularios y documentos internos.',
+    ],
+    'budefry'    => [
+        'hero_eyebrow'      => 'Portal Empresarial · NIT 901 565 887-9',
+        'hero_title_line_1' => 'Budefry',
+        'hero_title_line_2' => 'SAS',
+        'hero_description'  => 'Portal de operación, logística y producción industrial. Accede a los formularios de recursos humanos y documentos de gestión de planta.',
+    ],
+    'interactua' => [
+        'hero_eyebrow'      => 'Interactúa · Cultura Corporativa',
+        'hero_title_line_1' => 'Interactúa',
+        'hero_title_line_2' => '',
+        'hero_description'  => 'Espacio de cultura corporativa, reconocimientos y eventos importantes del grupo MC.',
+    ],
 ];
 
-$title_map = [
-    'anstra'     => '<span>Projection</span><br>Anstra',
-    'essenza'    => '<span>Essenza</span><br>Foods',
-    'budefry'    => '<span>Budefry</span><br>SAS',
-    'interactua' => 'Interactúa',
-    'default'    => 'Bienvenido a<br><span>MC Intranet</span>',
-];
+$default_eyebrow = 'Portal Transversal · Multicompañía';
+$default_title   = 'Bienvenido a<br><span>MC Intranet</span>';
+$default_desc    = 'Accede a los formularios, gestiones y recursos del grupo corporativo. Selecciona tu empresa o utiliza los servicios transversales.';
 
-$desc_map = [
-    'anstra'     => 'Portal de gestión administrativa, contabilidad y recursos humanos. Accede a todos los formularios y documentos internos de la empresa.',
-    'essenza'    => 'Portal de gestión comercial, mercadeo, marca y recursos humanos de Essenza Foods. Accede a todos tus formularios y documentos internos.',
-    'budefry'    => 'Portal de operación, logística y producción industrial. Accede a los formularios de recursos humanos y documentos de gestión de planta.',
-    'interactua' => 'Espacio de cultura corporativa, reconocimientos y eventos importantes del grupo MC.',
-    'default'    => 'Accede a los formularios, gestiones y recursos del grupo corporativo. Selecciona tu empresa o utiliza los servicios transversales.',
-];
+$eyebrow = $default_eyebrow;
+$title   = $default_title;
+$desc    = $default_desc;
 
-$eyebrow = $eyebrow_map[ $company ] ?? $eyebrow_map['default'];
-$title   = $title_map[ $company ]   ?? $title_map['default'];
-$desc    = $desc_map[ $company ]    ?? $desc_map['default'];
+if ( isset( $hero_company_defaults[ $company ] ) ) {
+    $hero_settings = $hero_company_defaults[ $company ];
+
+    if ( class_exists( 'MC_Intranet_Branding_Settings' ) ) {
+        $stored_company_settings = MC_Intranet_Branding_Settings::get_company_settings( $company );
+        if ( is_array( $stored_company_settings ) ) {
+            $hero_settings = wp_parse_args( $stored_company_settings, $hero_settings );
+        }
+    }
+
+    $eyebrow    = sanitize_text_field( (string) ( $hero_settings['hero_eyebrow'] ?? $default_eyebrow ) );
+    $title_line = sanitize_text_field( (string) ( $hero_settings['hero_title_line_1'] ?? '' ) );
+    $title_sub  = sanitize_text_field( (string) ( $hero_settings['hero_title_line_2'] ?? '' ) );
+    $desc       = sanitize_textarea_field( (string) ( $hero_settings['hero_description'] ?? $default_desc ) );
+
+    if ( '' !== $title_line && '' !== $title_sub ) {
+        $title = '<span>' . esc_html( $title_line ) . '</span><br>' . esc_html( $title_sub );
+    } elseif ( '' !== $title_line ) {
+        $title = esc_html( $title_line );
+    }
+}
 ?>
 
 <section class="page-hero" aria-labelledby="hero-title">
@@ -71,15 +103,15 @@ $desc    = $desc_map[ $company ]    ?? $desc_map['default'];
             <nav class="quick-access" aria-label="<?php esc_attr_e( 'Acceso rápido a empresas', 'mc-intranet' ); ?>">
                 <a href="<?php echo esc_url( home_url( '/anstra/' ) ); ?>" class="quick-access__item">
                     <?php echo mc_get_company_logo_img( 'anstra', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    Projection Anstra
+                    <?php echo esc_html( $anstra_name ); ?>
                 </a>
                 <a href="<?php echo esc_url( home_url( '/essenza/' ) ); ?>" class="quick-access__item">
                     <?php echo mc_get_company_logo_img( 'essenza', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    Essenza Foods
+                    <?php echo esc_html( $essenza_name ); ?>
                 </a>
                 <a href="<?php echo esc_url( home_url( '/budefry/' ) ); ?>" class="quick-access__item">
                     <?php echo mc_get_company_logo_img( 'budefry', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    Budefry
+                    <?php echo esc_html( $budefry_name ); ?>
                 </a>
                 <a href="<?php echo esc_url( home_url( '/interactua/' ) ); ?>" class="quick-access__item">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
