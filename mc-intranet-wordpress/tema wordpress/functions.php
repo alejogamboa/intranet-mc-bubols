@@ -310,6 +310,7 @@ function mc_intranet_render_branding_debug_panel(): void {
         $raw_title_1 = sanitize_text_field( (string) ( $raw_company['hero_title_line_1'] ?? '' ) );
         $raw_title_2 = sanitize_text_field( (string) ( $raw_company['hero_title_line_2'] ?? '' ) );
         $raw_desc    = sanitize_textarea_field( (string) ( $raw_company['hero_description'] ?? '' ) );
+        $raw_hero_bg = sanitize_hex_color( (string) ( $raw_company['hero_bg_color'] ?? '' ) );
 
         echo '<div style="padding:10px 10px 11px;border:1px solid #334155;border-radius:10px;background:#111827;margin-bottom:10px;">';
         printf( '<p style="margin:0 0 8px;"><strong>%1$s</strong> (<code style="color:#93c5fd;">%2$s</code>)</p>', esc_html( $display_name ), esc_html( $slug ) );
@@ -317,6 +318,7 @@ function mc_intranet_render_branding_debug_panel(): void {
         printf( '<p style="margin:0 0 6px;"><strong>Fondo encabezado:</strong> %s</p>', esc_html( $raw_bg ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Texto encabezado:</strong> %s</p>', esc_html( $raw_text ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Logo ID:</strong> %d</p>', $raw_logo_id );
+        printf( '<p style="margin:0 0 6px;"><strong>Hero fondo:</strong> %s</p>', esc_html( $raw_hero_bg ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero eyebrow:</strong> %s</p>', esc_html( $raw_eyebrow ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero título L1:</strong> %s</p>', esc_html( $raw_title_1 ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero título L2:</strong> %s</p>', esc_html( $raw_title_2 ?: '(vacio)' ) );

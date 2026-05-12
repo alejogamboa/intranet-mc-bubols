@@ -102,6 +102,11 @@ class MC_Intranet_Branding_Settings {
                 $hero_description = $defaults[ $company ]['hero_description'];
             }
 
+            $hero_bg_color = sanitize_hex_color( isset( $raw['hero_bg_color'] ) ? (string) $raw['hero_bg_color'] : '' );
+            if ( ! $hero_bg_color ) {
+                $hero_bg_color = $defaults[ $company ]['hero_bg_color'];
+            }
+
             $clean[ $company ] = [
                 'name'              => $name,
                 'header_bg_color'   => $header_bg_color,
@@ -111,6 +116,7 @@ class MC_Intranet_Branding_Settings {
                 'hero_title_line_1' => $hero_title_line_1,
                 'hero_title_line_2' => $hero_title_line_2,
                 'hero_description'  => $hero_description,
+                'hero_bg_color'     => $hero_bg_color,
             ];
         }
 
@@ -151,6 +157,7 @@ class MC_Intranet_Branding_Settings {
                 'hero_title_line_1' => 'Projection',
                 'hero_title_line_2' => 'Anstra',
                 'hero_description'  => 'Portal de gestión administrativa, contabilidad y recursos humanos. Accede a todos los formularios y documentos internos de la empresa.',
+                'hero_bg_color'     => '#1A2E52',
             ],
             'essenza' => [
                 'name'              => 'Essenza Foods',
@@ -161,6 +168,7 @@ class MC_Intranet_Branding_Settings {
                 'hero_title_line_1' => 'Essenza',
                 'hero_title_line_2' => 'Foods',
                 'hero_description'  => 'Portal de gestión comercial, mercadeo, marca y recursos humanos de Essenza Foods. Accede a todos tus formularios y documentos internos.',
+                'hero_bg_color'     => '#1B6B45',
             ],
             'budefry' => [
                 'name'              => 'Budefry SAS',
@@ -171,6 +179,7 @@ class MC_Intranet_Branding_Settings {
                 'hero_title_line_1' => 'Budefry',
                 'hero_title_line_2' => 'SAS',
                 'hero_description'  => 'Portal de operación, logística y producción industrial. Accede a los formularios de recursos humanos y documentos de gestión de planta.',
+                'hero_bg_color'     => '#2D3748',
             ],
             'interactua' => [
                 'name'              => 'Interactúa',
@@ -181,6 +190,7 @@ class MC_Intranet_Branding_Settings {
                 'hero_title_line_1' => 'Interactúa',
                 'hero_title_line_2' => '',
                 'hero_description'  => 'Espacio de cultura corporativa, reconocimientos y eventos importantes del grupo MC.',
+                'hero_bg_color'     => '#4338CA',
             ],
         ];
     }
@@ -271,6 +281,18 @@ class MC_Intranet_Branding_Settings {
                                         class="large-text"
                                         rows="3"
                                     ><?php echo esc_textarea( (string) $company_data['hero_description'] ); ?></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="mc-branding-<?php echo esc_attr( $company ); ?>-hero-bg"><?php esc_html_e( 'Hero: color de fondo', 'mc-intranet-core' ); ?></label></th>
+                                <td>
+                                    <input
+                                        type="color"
+                                        id="mc-branding-<?php echo esc_attr( $company ); ?>-hero-bg"
+                                        name="<?php echo esc_attr( self::OPTION_KEY ); ?>[<?php echo esc_attr( $company ); ?>][hero_bg_color]"
+                                        value="<?php echo esc_attr( (string) ( $company_data['hero_bg_color'] ?? '#1A2E52' ) ); ?>"
+                                    >
+                                    <p class="description"><?php esc_html_e( 'Color de fondo de la sección Hero en la página de esta empresa.', 'mc-intranet-core' ); ?></p>
                                 </td>
                             </tr>
                             <tr>

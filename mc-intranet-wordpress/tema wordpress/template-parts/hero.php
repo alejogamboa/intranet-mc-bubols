@@ -57,6 +57,7 @@ $default_desc    = 'Accede a los formularios, gestiones y recursos del grupo cor
 $eyebrow = $default_eyebrow;
 $title   = $default_title;
 $desc    = $default_desc;
+$hero_bg = '';
 
 if ( isset( $hero_company_defaults[ $company ] ) ) {
     $hero_settings = $hero_company_defaults[ $company ];
@@ -72,6 +73,7 @@ if ( isset( $hero_company_defaults[ $company ] ) ) {
     $title_line = sanitize_text_field( (string) ( $hero_settings['hero_title_line_1'] ?? '' ) );
     $title_sub  = sanitize_text_field( (string) ( $hero_settings['hero_title_line_2'] ?? '' ) );
     $desc       = sanitize_textarea_field( (string) ( $hero_settings['hero_description'] ?? $default_desc ) );
+    $hero_bg    = sanitize_hex_color( (string) ( $hero_settings['hero_bg_color'] ?? '' ) );
 
     if ( '' !== $title_line && '' !== $title_sub ) {
         $title = '<span>' . esc_html( $title_line ) . '</span><br>' . esc_html( $title_sub );
@@ -81,7 +83,7 @@ if ( isset( $hero_company_defaults[ $company ] ) ) {
 }
 ?>
 
-<section class="page-hero" aria-labelledby="hero-title">
+<section class="page-hero" aria-labelledby="hero-title"<?php if ( $hero_bg ) : ?> style="background:<?php echo esc_attr( $hero_bg ); ?>;"<?php endif; ?>>
     <div class="page-hero__pattern" aria-hidden="true"></div>
     <div class="container">
         <div class="page-hero__inner">

@@ -10,7 +10,16 @@
 <body <?php body_class(); ?> data-company="<?php echo mc_get_data_company_attr(); ?>">
   <?php wp_body_open(); ?>
 
-  <nav class="global-nav" role="navigation" aria-label="<?php esc_attr_e('Navegación principal', 'mc-intranet'); ?>">
+  <?php
+  $nav_bg_color    = '';
+  $nav_company_ctx = mc_get_company_context();
+  if ( 'default' !== $nav_company_ctx && class_exists( 'MC_Intranet_Branding_Settings' ) ) {
+    $nav_company_settings = MC_Intranet_Branding_Settings::get_company_settings( $nav_company_ctx );
+    $nav_bg_color         = sanitize_hex_color( (string) ( $nav_company_settings['hero_bg_color'] ?? '' ) );
+  }
+  $nav_inline_style = $nav_bg_color ? ' style="background-color:' . esc_attr( $nav_bg_color ) . ';"' : '';
+  ?>
+  <nav class="global-nav" role="navigation" aria-label="<?php esc_attr_e('Navegación principal', 'mc-intranet'); ?>"<?php echo $nav_inline_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
     <div class="container global-nav__inner">
 
       <a href="<?php echo esc_url(home_url('/')); ?>" class="global-nav__logo" aria-label="<?php esc_attr_e('MC Intranet — Inicio', 'mc-intranet'); ?>">
