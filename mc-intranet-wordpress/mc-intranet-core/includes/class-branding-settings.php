@@ -112,6 +112,7 @@ class MC_Intranet_Branding_Settings {
                 'header_bg_color'   => $header_bg_color,
                 'header_text_color' => $header_text_color,
                 'logo_id'           => absint( $raw['logo_id'] ?? 0 ),
+                'hero_logo_id'      => absint( $raw['hero_logo_id'] ?? 0 ),
                 'hero_eyebrow'      => $hero_eyebrow,
                 'hero_title_line_1' => $hero_title_line_1,
                 'hero_title_line_2' => $hero_title_line_2,
@@ -153,6 +154,7 @@ class MC_Intranet_Branding_Settings {
                 'header_bg_color'   => '#FFFFFF',
                 'header_text_color' => '#0F172A',
                 'logo_id'           => 0,
+                'hero_logo_id'      => 0,
                 'hero_eyebrow'      => 'Portal Empresarial · NIT 901 967 530-0',
                 'hero_title_line_1' => 'Projection',
                 'hero_title_line_2' => 'Anstra',
@@ -164,6 +166,7 @@ class MC_Intranet_Branding_Settings {
                 'header_bg_color'   => '#FFFFFF',
                 'header_text_color' => '#0F172A',
                 'logo_id'           => 0,
+                'hero_logo_id'      => 0,
                 'hero_eyebrow'      => 'Portal Empresarial · NIT 901 971 854-7',
                 'hero_title_line_1' => 'Essenza',
                 'hero_title_line_2' => 'Foods',
@@ -175,6 +178,7 @@ class MC_Intranet_Branding_Settings {
                 'header_bg_color'   => '#FFFFFF',
                 'header_text_color' => '#0F172A',
                 'logo_id'           => 0,
+                'hero_logo_id'      => 0,
                 'hero_eyebrow'      => 'Portal Empresarial · NIT 901 565 887-9',
                 'hero_title_line_1' => 'Budefry',
                 'hero_title_line_2' => 'SAS',
@@ -186,6 +190,7 @@ class MC_Intranet_Branding_Settings {
                 'header_bg_color'   => '#FFFFFF',
                 'header_text_color' => '#0F172A',
                 'logo_id'           => 0,
+                'hero_logo_id'      => 0,
                 'hero_eyebrow'      => 'Interactúa · Cultura Corporativa',
                 'hero_title_line_1' => 'Interactúa',
                 'hero_title_line_2' => '',
@@ -216,6 +221,7 @@ class MC_Intranet_Branding_Settings {
                     $company_data = isset( $options[ $company ] ) && is_array( $options[ $company ] ) ? $options[ $company ] : [];
                     $company_data = wp_parse_args( $company_data, $defaults[ $company ] );
                     $logo_id      = absint( $company_data['logo_id'] );
+                    $hero_logo_id = absint( $company_data['hero_logo_id'] ?? 0 );
                     ?>
                     <table class="form-table" role="presentation" style="max-width:760px;background:#fff;border:1px solid #dcdcde;padding:18px 20px;margin:0 0 20px;">
                         <tbody>
@@ -351,6 +357,43 @@ class MC_Intranet_Branding_Settings {
                                         style="margin-left:8px;"
                                     >
                                         <?php esc_html_e( 'Quitar logo', 'mc-intranet-core' ); ?>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php esc_html_e( 'Logo del Hero (blanco)', 'mc-intranet-core' ); ?></th>
+                                <td>
+                                    <input
+                                        type="hidden"
+                                        id="mc-branding-<?php echo esc_attr( $company ); ?>-hero-logo-id"
+                                        name="<?php echo esc_attr( self::OPTION_KEY ); ?>[<?php echo esc_attr( $company ); ?>][hero_logo_id]"
+                                        value="<?php echo esc_attr( (string) $hero_logo_id ); ?>"
+                                    >
+
+                                    <div id="mc-branding-<?php echo esc_attr( $company ); ?>-hero-logo-preview" style="margin:0 0 12px;">
+                                        <?php if ( $hero_logo_id ) : ?>
+                                            <?php echo wp_get_attachment_image( $hero_logo_id, 'medium', false, [ 'style' => 'max-width:240px;height:auto;' ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                        <?php else : ?>
+                                            <em><?php esc_html_e( 'Sin logo personalizado (se usa el logo blanco del tema).', 'mc-intranet-core' ); ?></em>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="button mc-branding-upload"
+                                        data-target="mc-branding-<?php echo esc_attr( $company ); ?>-hero-logo-id"
+                                        data-preview="mc-branding-<?php echo esc_attr( $company ); ?>-hero-logo-preview"
+                                    >
+                                        <?php esc_html_e( 'Seleccionar logo Hero', 'mc-intranet-core' ); ?>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="button button-secondary mc-branding-remove"
+                                        data-target="mc-branding-<?php echo esc_attr( $company ); ?>-hero-logo-id"
+                                        data-preview="mc-branding-<?php echo esc_attr( $company ); ?>-hero-logo-preview"
+                                        style="margin-left:8px;"
+                                    >
+                                        <?php esc_html_e( 'Quitar logo Hero', 'mc-intranet-core' ); ?>
                                     </button>
                                 </td>
                             </tr>

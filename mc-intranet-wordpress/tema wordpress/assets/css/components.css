@@ -377,10 +377,30 @@ html.mc-adminbar-hidden #wpadminbar {
 .page-hero__inner {
   position: relative;
   z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-10);
+}
+
+.page-hero__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
   max-width: 720px;
+}
+
+.page-hero__brand {
+  justify-self: end;
+  max-width: min(42vw, 540px);
+  opacity: 0.96;
+}
+
+.page-hero__brand .company-logo--hero {
+  width: 60%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.2));
 }
 
 .page-hero__eyebrow {
@@ -428,6 +448,18 @@ html.mc-adminbar-hidden #wpadminbar {
   color: rgba(255,255,255,0.70);
   line-height: var(--leading-relaxed);
   max-width: 560px;
+}
+
+@media (max-width: 1024px) {
+  .page-hero__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .page-hero__brand {
+    justify-self: start;
+    max-width: min(72vw, 360px);
+  }
 }
 
 /* ================================================================
@@ -1183,13 +1215,19 @@ html.mc-adminbar-hidden #wpadminbar {
 /* Fallback visual para eyebrow en páginas internas renderizadas desde Elementor */
 [data-company="anstra"] .page-hero__eyebrow > svg,
 [data-company="essenza"] .page-hero__eyebrow > svg,
-[data-company="budefry"] .page-hero__eyebrow > svg {
+[data-company="budefry"] .page-hero__eyebrow > svg,
+[data-company="interactua"] .page-hero__eyebrow > svg,
+[data-company="mc"] .page-hero__eyebrow > svg,
+[data-company="default"] .page-hero__eyebrow > svg {
   display: none;
 }
 
 [data-company="anstra"] .page-hero__eyebrow::before,
 [data-company="essenza"] .page-hero__eyebrow::before,
-[data-company="budefry"] .page-hero__eyebrow::before {
+[data-company="budefry"] .page-hero__eyebrow::before,
+[data-company="interactua"] .page-hero__eyebrow::before,
+[data-company="mc"] .page-hero__eyebrow::before,
+[data-company="default"] .page-hero__eyebrow::before {
   content: '';
   width: 14px;
   height: 14px;
@@ -1201,15 +1239,21 @@ html.mc-adminbar-hidden #wpadminbar {
 }
 
 [data-company="anstra"] .page-hero__eyebrow::before {
-  background-image: url('../img/logos/anstra.webp');
+  background-image: url('../img/logos/anstra-blanco.png');
 }
 
 [data-company="essenza"] .page-hero__eyebrow::before {
-  background-image: url('../img/logos/essenza.webp');
+  background-image: url('../img/logos/essenza-blanco.png');
 }
 
 [data-company="budefry"] .page-hero__eyebrow::before {
-  background-image: url('../img/logos/budefry.webp');
+  background-image: url('../img/logos/budefry-blanco.png');
+}
+
+[data-company="interactua"] .page-hero__eyebrow::before,
+[data-company="mc"] .page-hero__eyebrow::before,
+[data-company="default"] .page-hero__eyebrow::before {
+  background-image: url('../img/logos/mc-blanco.png');
 }
 
 /* ================================================================

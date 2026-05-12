@@ -24,14 +24,10 @@
 
       <a href="<?php echo esc_url(home_url('/')); ?>" class="global-nav__logo" aria-label="<?php esc_attr_e('MC Intranet — Inicio', 'mc-intranet'); ?>">
         <div class="global-nav__logo-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-            <path d="M2 12h20" />
-          </svg>
+          <img src="/wp-content/themes/mc_intranet/assets/img/logos/mc-blanco.png" alt="">
         </div>
         <div class="global-nav__logo-text">
-          <span class="global-nav__logo-name">MC Intranet</span>
+          <span class="global-nav__logo-name">Intranet</span>
           <span class="global-nav__logo-sub">Portal Corporativo</span>
         </div>
       </a>

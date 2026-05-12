@@ -18,7 +18,8 @@ $hero_icon_map = [
 
 $company        = mc_get_company_context();
 $eyebrow_icon   = $hero_icon_map[ $company ] ?? $hero_icon_map['default'];
-$eyebrow_logo   = mc_get_company_logo_img( $company, 'company-logo company-logo--eyebrow', '' );
+$eyebrow_logo   = mc_get_company_hero_logo_img( $company, 'company-logo company-logo--eyebrow', '' );
+$hero_logo      = mc_get_company_hero_logo_img( $company, 'company-logo company-logo--hero', '', false );
 $anstra_name    = mc_get_company_display_name( 'anstra', 'Projection Anstra' );
 $essenza_name   = mc_get_company_display_name( 'essenza', 'Essenza Foods' );
 $budefry_name   = mc_get_company_display_name( 'budefry', 'Budefry SAS' );
@@ -87,39 +88,47 @@ if ( isset( $hero_company_defaults[ $company ] ) ) {
     <div class="page-hero__pattern" aria-hidden="true"></div>
     <div class="container">
         <div class="page-hero__inner">
-            <span class="page-hero__eyebrow">
-                <?php if ( $eyebrow_logo ) : ?>
-                    <?php echo $eyebrow_logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                <?php else : ?>
-                    <?php echo $eyebrow_icon; // SVG inline, sanitized above ?>
+            <div class="page-hero__content">
+                <span class="page-hero__eyebrow">
+                    <?php if ( $eyebrow_logo ) : ?>
+                        <?php echo $eyebrow_logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                    <?php else : ?>
+                        <?php echo $eyebrow_icon; // SVG inline, sanitized above ?>
+                    <?php endif; ?>
+                    <?php echo esc_html( $eyebrow ); ?>
+                </span>
+                <h1 class="page-hero__title" id="hero-title">
+                    <?php echo wp_kses( $title, [ 'br' => [], 'span' => [] ] ); ?>
+                </h1>
+                <p class="page-hero__description">
+                    <?php echo esc_html( $desc ); ?>
+                </p>
+                <?php if ( 'default' === $company ) : ?>
+                <nav class="quick-access" aria-label="<?php esc_attr_e( 'Acceso rápido a empresas', 'mc-intranet' ); ?>">
+                    <a href="<?php echo esc_url( home_url( '/anstra/' ) ); ?>" class="quick-access__item">
+                        <?php echo mc_get_company_logo_img( 'anstra', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo esc_html( $anstra_name ); ?>
+                    </a>
+                    <a href="<?php echo esc_url( home_url( '/essenza/' ) ); ?>" class="quick-access__item">
+                        <?php echo mc_get_company_logo_img( 'essenza', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo esc_html( $essenza_name ); ?>
+                    </a>
+                    <a href="<?php echo esc_url( home_url( '/budefry/' ) ); ?>" class="quick-access__item">
+                        <?php echo mc_get_company_logo_img( 'budefry', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo esc_html( $budefry_name ); ?>
+                    </a>
+                    <a href="<?php echo esc_url( home_url( '/interactua/' ) ); ?>" class="quick-access__item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                        Interactúa
+                    </a>
+                </nav>
                 <?php endif; ?>
-                <?php echo esc_html( $eyebrow ); ?>
-            </span>
-            <h1 class="page-hero__title" id="hero-title">
-                <?php echo wp_kses( $title, [ 'br' => [], 'span' => [] ] ); ?>
-            </h1>
-            <p class="page-hero__description">
-                <?php echo esc_html( $desc ); ?>
-            </p>
-            <?php if ( 'default' === $company ) : ?>
-            <nav class="quick-access" aria-label="<?php esc_attr_e( 'Acceso rápido a empresas', 'mc-intranet' ); ?>">
-                <a href="<?php echo esc_url( home_url( '/anstra/' ) ); ?>" class="quick-access__item">
-                    <?php echo mc_get_company_logo_img( 'anstra', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    <?php echo esc_html( $anstra_name ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/essenza/' ) ); ?>" class="quick-access__item">
-                    <?php echo mc_get_company_logo_img( 'essenza', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    <?php echo esc_html( $essenza_name ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/budefry/' ) ); ?>" class="quick-access__item">
-                    <?php echo mc_get_company_logo_img( 'budefry', 'company-logo company-logo--quick-access', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    <?php echo esc_html( $budefry_name ); ?>
-                </a>
-                <a href="<?php echo esc_url( home_url( '/interactua/' ) ); ?>" class="quick-access__item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                    Interactúa
-                </a>
-            </nav>
+            </div>
+
+            <?php if ( $hero_logo ) : ?>
+            <div class="page-hero__brand" aria-hidden="true">
+                <?php echo $hero_logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </div>
             <?php endif; ?>
         </div>
     </div>

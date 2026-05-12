@@ -30,7 +30,7 @@ function mc_intranet_theme_setup() {
 
 add_action( 'wp_enqueue_scripts', 'mc_intranet_enqueue_scripts' );
 function mc_intranet_enqueue_scripts() {
-    $ver = '2.0.7';
+    $ver = '2.0.10';
     $dir = get_template_directory_uri();
 
     // 1. Design tokens (base de variables CSS — siempre primero)
@@ -176,6 +176,113 @@ function mc_get_company_logo_url( string $company_slug ): string {
 }
 
 /**
+ * Retorna URL del logo para Hero por slug de empresa.
+ *
+ * Prioridad:
+ * 1) Logo Hero personalizado (hero_logo_id) desde ajustes.
+ * 2) Fallback blanco del tema por compañía/contexto.
+ *
+ * @param string $company_slug Slug de empresa.
+ * @return string
+ */
+function mc_get_company_hero_logo_url( string $company_slug ): string {
+    $logos = [
+        'anstra'     => 'anstra-blanco.png',
+        'essenza'    => 'essenza-blanco.png',
+        'budefry'    => 'budefry-blanco.png',
+        'interactua' => 'mc-blanco.png',
+        'mc'         => 'mc-blanco.png',
+        'default'    => 'mc-blanco.png',
+    ];
+
+    $slug = sanitize_key( $company_slug );
+    if ( ! isset( $logos[ $slug ] ) ) {
+        $slug = 'default';
+    }
+
+    if ( in_array( $slug, [ 'anstra', 'essenza', 'budefry', 'interactua' ], true ) ) {
+        $branding_options = get_option( 'mc_intranet_company_branding', [] );
+        if ( is_array( $branding_options ) && isset( $branding_options[ $slug ] ) && is_array( $branding_options[ $slug ] ) ) {
+            $custom_logo_id = absint( $branding_options[ $slug ]['hero_logo_id'] ?? 0 );
+            if ( $custom_logo_id > 0 ) {
+                $custom_logo_url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
+                if ( $custom_logo_url ) {
+                    return $custom_logo_url;
+                }
+            }
+        }
+    }
+
+    $relative = '/assets/img/logos/' . $logos[ $slug ];
+    $file     = get_template_directory() . $relative;
+
+    if ( ! file_exists( $file ) ) {
+        return '';
+    }
+
+    return get_template_directory_uri() . $relative;
+}
+
+/**
+ * Construye etiqueta <img> de logo para Hero.
+ *
+ * @param string      $company Slug o etiqueta de empresa.
+ * @param string      $class   Clases CSS para la imagen.
+ * @param string|null $alt     Alt del logo. Null usa etiqueta por defecto.
+ * @param bool        $lazy    Si true, agrega loading="lazy".
+ * @return string
+ */
+function mc_get_company_hero_logo_img( string $company, string $class = 'company-logo company-logo--eyebrow', ?string $alt = null, bool $lazy = true ): string {
+    $slug = sanitize_key( $company );
+    if ( ! in_array( $slug, [ 'anstra', 'essenza', 'budefry', 'interactua', 'mc', 'default' ], true ) ) {
+        $slug = mc_get_company_slug_from_label( $company );
+    }
+
+    if ( '' === $slug ) {
+        $slug = 'default';
+    }
+
+    $url = mc_get_company_hero_logo_url( $slug );
+    if ( ! $url ) {
+        return '';
+    }
+
+    $labels = [
+        'anstra'     => 'Projection Anstra',
+        'essenza'    => 'Essenza Foods',
+        'budefry'    => 'Budefry SAS',
+        'interactua' => 'Interactua',
+        'mc'         => 'MC Intranet',
+        'default'    => 'MC Intranet',
+    ];
+
+    if ( in_array( $slug, [ 'anstra', 'essenza', 'budefry', 'interactua' ], true ) ) {
+        $branding_options = get_option( 'mc_intranet_company_branding', [] );
+        if ( is_array( $branding_options ) && isset( $branding_options[ $slug ] ) && is_array( $branding_options[ $slug ] ) ) {
+            $custom_name = sanitize_text_field( (string) ( $branding_options[ $slug ]['name'] ?? '' ) );
+            if ( '' !== $custom_name ) {
+                $labels[ $slug ] = $custom_name;
+            }
+        }
+    }
+
+    if ( null === $alt ) {
+        $label = $labels[ $slug ] ?? $slug;
+        $alt   = sprintf( __( 'Logo de %s', 'mc-intranet' ), $label );
+    }
+
+    $attrs = $lazy ? ' loading="lazy" decoding="async"' : ' decoding="async"';
+
+    return sprintf(
+        '<img src="%1$s" alt="%2$s" class="%3$s"%4$s>',
+        esc_url( $url ),
+        esc_attr( $alt ),
+        esc_attr( $class ),
+        $attrs
+    );
+}
+
+/**
  * Construye etiqueta <img> de logo de empresa.
  *
  * @param string      $company Slug o etiqueta de empresa.
@@ -306,11 +413,13 @@ function mc_intranet_render_branding_debug_panel(): void {
         $raw_bg      = sanitize_hex_color( (string) ( $raw_company['header_bg_color'] ?? '' ) );
         $raw_text    = sanitize_hex_color( (string) ( $raw_company['header_text_color'] ?? '' ) );
         $raw_logo_id = absint( $raw_company['logo_id'] ?? 0 );
+        $raw_hero_logo_id = absint( $raw_company['hero_logo_id'] ?? 0 );
         $raw_eyebrow = sanitize_text_field( (string) ( $raw_company['hero_eyebrow'] ?? '' ) );
         $raw_title_1 = sanitize_text_field( (string) ( $raw_company['hero_title_line_1'] ?? '' ) );
         $raw_title_2 = sanitize_text_field( (string) ( $raw_company['hero_title_line_2'] ?? '' ) );
         $raw_desc    = sanitize_textarea_field( (string) ( $raw_company['hero_description'] ?? '' ) );
         $raw_hero_bg = sanitize_hex_color( (string) ( $raw_company['hero_bg_color'] ?? '' ) );
+        $hero_logo_url = mc_get_company_hero_logo_url( $slug );
 
         echo '<div style="padding:10px 10px 11px;border:1px solid #334155;border-radius:10px;background:#111827;margin-bottom:10px;">';
         printf( '<p style="margin:0 0 8px;"><strong>%1$s</strong> (<code style="color:#93c5fd;">%2$s</code>)</p>', esc_html( $display_name ), esc_html( $slug ) );
@@ -318,12 +427,14 @@ function mc_intranet_render_branding_debug_panel(): void {
         printf( '<p style="margin:0 0 6px;"><strong>Fondo encabezado:</strong> %s</p>', esc_html( $raw_bg ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Texto encabezado:</strong> %s</p>', esc_html( $raw_text ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Logo ID:</strong> %d</p>', $raw_logo_id );
+        printf( '<p style="margin:0 0 6px;"><strong>Hero logo ID:</strong> %d</p>', $raw_hero_logo_id );
         printf( '<p style="margin:0 0 6px;"><strong>Hero fondo:</strong> %s</p>', esc_html( $raw_hero_bg ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero eyebrow:</strong> %s</p>', esc_html( $raw_eyebrow ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero título L1:</strong> %s</p>', esc_html( $raw_title_1 ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero título L2:</strong> %s</p>', esc_html( $raw_title_2 ?: '(vacio)' ) );
         printf( '<p style="margin:0 0 6px;"><strong>Hero descripción:</strong> %s</p>', esc_html( $raw_desc ?: '(vacio)' ) );
         printf( '<p style="margin:0;"><strong>URL logo resuelta:</strong> %s</p>', esc_html( $logo_url ?: '(sin logo)' ) );
+        printf( '<p style="margin:6px 0 0;"><strong>URL logo hero:</strong> %s</p>', esc_html( $hero_logo_url ?: '(sin logo)' ) );
         echo '</div>';
     }
 
