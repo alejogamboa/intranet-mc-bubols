@@ -29,6 +29,7 @@ class MC_Intranet_Shortcodes {
         add_shortcode( 'mc_directorio_contactos',     [ $this, 'shortcode_directorio_contactos' ] );
         add_shortcode( 'mc_login_screen',             [ $this, 'shortcode_login_screen' ] );
         add_shortcode( 'mc_access_denied',            [ $this, 'shortcode_access_denied' ] );
+        add_shortcode( 'display-posts',               [ $this, 'shortcode_display_posts' ] );
     }
 
     // ─── [mc_formularios] ────────────────────────────────────────────────────
@@ -647,6 +648,81 @@ class MC_Intranet_Shortcodes {
         </section>
         <?php
 
+        return ob_get_clean();
+    }
+
+    // ─── [display-posts] ────────────────────────────────────────────────────
+
+    /**
+     * @param array $atts {
+     *   @type string $subtitle       Subtítulo/encabezado de la sección. Default: 'Boletines'.
+     *   @type int    $posts_per_page Número de posts a mostrar. Default: 40.
+     *   @type string $empresa        Slug de empresa (reservado para filtrado futuro). Default: 'interactua'.
+     * }
+     */
+    public function shortcode_display_posts( $atts ): string {
+        $atts = shortcode_atts( [
+            'subtitle'       => 'Boletines',
+            'posts_per_page' => 40,
+            'empresa'        => 'interactua',
+        ], $atts, 'display-posts' );
+
+        $subtitle       = sanitize_text_field( $atts['subtitle'] );
+        $posts_per_page = absint( $atts['posts_per_page'] );
+        $empresa        = sanitize_key( $atts['empresa'] );
+
+        $query = new WP_Query( [
+            'post_type'      => 'post',
+            'posts_per_page' => $posts_per_page,
+            'post_status'    => 'publish',
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ] );
+
+        if ( ! $query->have_posts() ) {
+            return '';
+        }
+
+        $posts = [];
+
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $post_id      = get_the_ID();
+            $thumbnail_id = get_post_thumbnail_id( $post_id );
+            $raw_cats     = get_the_category( $post_id );
+
+            $categories = [];
+            foreach ( $raw_cats as $cat ) {
+                $categories[] = [ 'name' => $cat->name, 'slug' => $cat->slug ];
+            }
+
+            $posts[] = [
+                'id'          => $post_id,
+                'title'       => get_the_title(),
+                'excerpt'     => wp_trim_words( get_the_excerpt(), 25 ),
+                'permalink'   => get_permalink(),
+                'date'        => get_the_date( 'd M Y' ),
+                'date_iso'    => get_the_date( 'c' ),
+                'image_url'   => (string) get_the_post_thumbnail_url( $post_id, 'medium_large' ),
+                'image_alt'   => $thumbnail_id
+                                    ? (string) get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true )
+                                    : get_the_title(),
+                'categories'  => $categories,
+                'search_text' => implode( ' ', [
+                    get_the_title(),
+                    get_the_excerpt(),
+                    implode( ' ', wp_list_pluck( $raw_cats, 'name' ) ),
+                ] ),
+            ];
+        }
+        wp_reset_postdata();
+
+        if ( empty( $posts ) ) {
+            return '';
+        }
+
+        ob_start();
+        include MC_CORE_TEMPLATES . 'display-posts.php';
         return ob_get_clean();
     }
 
