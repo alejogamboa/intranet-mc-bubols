@@ -16,8 +16,16 @@ function mc_intranet_theme_setup() {
     // Imágenes destacadas
     add_theme_support( 'post-thumbnails' );
 
+    // Tamaños adicionales para el hero del post individual
+    add_image_size( 'sp-hero', 1600, 700, true );
+
     // HTML5 semántico
     add_theme_support( 'html5', [ 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ] );
+
+    // Soporte explícito de Elementor (permite usar el tema con Elementor sin conflictos)
+    add_theme_support( 'editor-styles' );
+    add_theme_support( 'align-wide' );
+    add_theme_support( 'responsive-embeds' );
 
     // Menús registrados
     register_nav_menus( [
@@ -50,6 +58,11 @@ function mc_intranet_enqueue_scripts() {
 
     // 6. Oculta barra admin al hacer scroll y la muestra al volver arriba
     wp_enqueue_script( 'mc-admin-bar-scroll', $dir . '/assets/js/admin-bar-scroll.js', [], $ver, true );
+
+    // 7. Estilos del post individual (solo en single posts)
+    if ( is_single() ) {
+        wp_enqueue_style( 'mc-single-post', $dir . '/assets/css/single-post.css', [ 'mc-components' ], $ver );
+    }
 }
 
 // ─── Contexto de empresa ─────────────────────────────────────────────────────
