@@ -18,6 +18,10 @@ $instance_id = 'dp-' . wp_rand( 1000, 999999 );
 $dp_color_bg   = [ '#EEF2FF', '#FEF3C7', '#DCFCE7', '#FCE7F3', '#E0F2FE', '#FFF7ED', '#F3E8FF', '#ECFDF5' ];
 $dp_color_text = [ '#3730A3', '#92400E', '#166534', '#9D174D', '#075985', '#C2410C', '#6B21A8', '#065F46' ];
 $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB923C', '#C084FC', '#34D399' ];
+
+$featured_post  = ! empty( $posts ) ? $posts[0] : null;
+$secondary_posts = array_slice( $posts, 1, 2 );
+$remaining_posts = array_slice( $posts, 3 );
 ?>
 <div id="<?php echo esc_attr( $instance_id ); ?>" class="dp-section company--<?php echo esc_attr( $empresa ?: 'interactua' ); ?>">
 
@@ -48,82 +52,171 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 		</div>
 	</div>
 
-	<div class="dp-grid" role="list" aria-label="<?php echo esc_attr( $subtitle ); ?>">
-		<?php foreach ( $posts as $i => $post ) : ?>
-			<?php
-			$has_image  = ! empty( $post['image_url'] );
-			$img_alt    = trim( (string) $post['image_alt'] ) ?: esc_attr( (string) $post['title'] );
-			$parts      = preg_split( '/\s+/u', trim( (string) $post['title'] ) );
-			$initials   = '';
+	<div class="dp-feed" role="list" aria-label="<?php echo esc_attr( $subtitle ); ?>">
+
+		<?php
+		// ── Featured card (first post) ────────────────────────────────────────
+		if ( $featured_post ) :
+			$has_image = ! empty( $featured_post['image_url'] );
+			$img_alt   = trim( (string) $featured_post['image_alt'] ) ?: esc_attr( (string) $featured_post['title'] );
+			$parts     = preg_split( '/\s+/u', trim( (string) $featured_post['title'] ) );
+			$initials  = '';
 			if ( is_array( $parts ) ) {
 				foreach ( $parts as $part ) {
-					if ( '' === $part ) {
-						continue;
-					}
+					if ( '' === $part ) { continue; }
 					$initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) );
-					if ( mb_strlen( $initials ) >= 2 ) {
-						break;
-					}
+					if ( mb_strlen( $initials ) >= 2 ) { break; }
 				}
 			}
+			$card_accent = 'var(--color-primary, #4338CA)';
+			if ( ! empty( $featured_post['categories'] ) ) {
+				$first_idx   = abs( crc32( (string) $featured_post['categories'][0]['slug'] ) ) % 8;
+				$card_accent = $dp_accent_hex[ $first_idx ];
+			}
+		?>
+		<article
+			class="dp-card dp-card--featured"
+			role="listitem"
+			data-search="<?php echo esc_attr( (string) $featured_post['search_text'] ); ?>"
+			style="--dp-delay:0;--dp-accent:<?php echo esc_attr( $card_accent ); ?>"
+		>
+			<a
+				class="dp-card__inner"
+				href="<?php echo esc_url( (string) $featured_post['permalink'] ); ?>"
+				aria-label="<?php echo esc_attr( sprintf( __( 'Leer: %s', 'mc-intranet-core' ), (string) $featured_post['title'] ) ); ?>"
+			>
+				<div class="dp-card__media-wrap">
+					<?php if ( $has_image ) : ?>
+						<figure class="dp-card__media">
+							<img
+								class="dp-card__img"
+								src="<?php echo esc_url( (string) $featured_post['image_url'] ); ?>"
+								alt="<?php echo esc_attr( $img_alt ); ?>"
+								loading="eager"
+								decoding="async"
+							/>
+						</figure>
+					<?php else : ?>
+						<div class="dp-card__placeholder" aria-hidden="true">
+							<span class="dp-card__initials"><?php echo esc_html( $initials ?: '--' ); ?></span>
+						</div>
+					<?php endif; ?>
+					<div class="dp-card__media-overlay" aria-hidden="true"></div>
+					<div class="dp-card__featured-badge" aria-hidden="true">
+						<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+						<?php esc_html_e( 'Destacado', 'mc-intranet-core' ); ?>
+					</div>
+				</div>
 
+				<div class="dp-card__body">
+					<?php if ( ! empty( $featured_post['categories'] ) ) : ?>
+						<div class="dp-pills" aria-label="<?php esc_attr_e( 'Categorías', 'mc-intranet-core' ); ?>">
+							<?php foreach ( $featured_post['categories'] as $cat ) : ?>
+								<?php
+								$color_idx  = abs( crc32( (string) $cat['slug'] ) ) % 8;
+								$pill_style = 'background:' . $dp_color_bg[ $color_idx ] . ';color:' . $dp_color_text[ $color_idx ] . ';';
+								?>
+								<span class="dp-pill" style="<?php echo esc_attr( $pill_style ); ?>">
+									<?php echo esc_html( (string) $cat['name'] ); ?>
+								</span>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
+
+					<h3 class="dp-card__title"><?php echo esc_html( (string) $featured_post['title'] ); ?></h3>
+
+					<?php if ( $featured_post['excerpt'] ) : ?>
+						<p class="dp-card__excerpt"><?php echo esc_html( (string) $featured_post['excerpt'] ); ?></p>
+					<?php endif; ?>
+
+					<div class="dp-card__footer">
+						<time class="dp-card__date" datetime="<?php echo esc_attr( (string) $featured_post['date_iso'] ); ?>">
+							<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+							<?php echo esc_html( (string) $featured_post['date'] ); ?>
+						</time>
+						<span class="dp-card__cta" aria-hidden="true">
+							<?php esc_html_e( 'Leer', 'mc-intranet-core' ); ?>
+							<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+						</span>
+					</div>
+				</div>
+
+				<div class="dp-card__accent-bar" aria-hidden="true"></div>
+			</a>
+		</article>
+		<?php endif; ?>
+
+		<?php
+		// ── Secondary horizontal cards (posts 2–3) ────────────────────────────
+		foreach ( $secondary_posts as $i => $post ) :
+			$has_image = ! empty( $post['image_url'] );
+			$img_alt   = trim( (string) $post['image_alt'] ) ?: esc_attr( (string) $post['title'] );
+			$parts     = preg_split( '/\s+/u', trim( (string) $post['title'] ) );
+			$initials  = '';
+			if ( is_array( $parts ) ) {
+				foreach ( $parts as $part ) {
+					if ( '' === $part ) { continue; }
+					$initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) );
+					if ( mb_strlen( $initials ) >= 2 ) { break; }
+				}
+			}
 			$card_accent = 'var(--color-primary, #4338CA)';
 			if ( ! empty( $post['categories'] ) ) {
 				$first_idx   = abs( crc32( (string) $post['categories'][0]['slug'] ) ) % 8;
 				$card_accent = $dp_accent_hex[ $first_idx ];
 			}
-			?>
-			<article
-				class="dp-card"
-				role="listitem"
-				data-search="<?php echo esc_attr( (string) $post['search_text'] ); ?>"
-				style="--dp-delay:<?php echo esc_attr( (string) min( $i, 11 ) ); ?>;--dp-accent:<?php echo esc_attr( $card_accent ); ?>"
+			$is_reverse = ( 1 === $i );
+		?>
+		<article
+			class="dp-card dp-card--horizontal<?php echo $is_reverse ? ' dp-card--reverse' : ''; ?>"
+			role="listitem"
+			data-search="<?php echo esc_attr( (string) $post['search_text'] ); ?>"
+			style="--dp-delay:<?php echo esc_attr( (string) ( $i + 1 ) ); ?>;--dp-accent:<?php echo esc_attr( $card_accent ); ?>"
+		>
+			<a
+				class="dp-card__inner"
+				href="<?php echo esc_url( (string) $post['permalink'] ); ?>"
+				aria-label="<?php echo esc_attr( sprintf( __( 'Leer: %s', 'mc-intranet-core' ), (string) $post['title'] ) ); ?>"
 			>
-				<a
-					class="dp-card__inner"
-					href="<?php echo esc_url( (string) $post['permalink'] ); ?>"
-					aria-label="<?php echo esc_attr( sprintf( __( 'Leer: %s', 'mc-intranet-core' ), (string) $post['title'] ) ); ?>"
-				>
-					<div class="dp-card__media-wrap">
-						<?php if ( $has_image ) : ?>
-							<figure class="dp-card__media">
-								<img
-									class="dp-card__img"
-									src="<?php echo esc_url( (string) $post['image_url'] ); ?>"
-									alt="<?php echo esc_attr( $img_alt ); ?>"
-									loading="lazy"
-									decoding="async"
-								/>
-							</figure>
-						<?php else : ?>
-							<div class="dp-card__placeholder" aria-hidden="true">
-								<span class="dp-card__initials"><?php echo esc_html( $initials ?: '--' ); ?></span>
-							</div>
-						<?php endif; ?>
-						<div class="dp-card__media-overlay" aria-hidden="true"></div>
-					</div>
+				<div class="dp-card__media-wrap">
+					<?php if ( $has_image ) : ?>
+						<figure class="dp-card__media">
+							<img
+								class="dp-card__img"
+								src="<?php echo esc_url( (string) $post['image_url'] ); ?>"
+								alt="<?php echo esc_attr( $img_alt ); ?>"
+								loading="lazy"
+								decoding="async"
+							/>
+						</figure>
+					<?php else : ?>
+						<div class="dp-card__placeholder" aria-hidden="true">
+							<span class="dp-card__initials"><?php echo esc_html( $initials ?: '--' ); ?></span>
+						</div>
+					<?php endif; ?>
+					<div class="dp-card__media-overlay" aria-hidden="true"></div>
+				</div>
 
-					<div class="dp-card__body">
-						<?php if ( ! empty( $post['categories'] ) ) : ?>
-							<div class="dp-pills" aria-label="<?php esc_attr_e( 'Categorías', 'mc-intranet-core' ); ?>">
-								<?php foreach ( $post['categories'] as $cat ) : ?>
-									<?php
-									$color_idx  = abs( crc32( (string) $cat['slug'] ) ) % 8;
-									$pill_style = 'background:' . $dp_color_bg[ $color_idx ] . ';color:' . $dp_color_text[ $color_idx ] . ';';
-									?>
-									<span class="dp-pill" style="<?php echo esc_attr( $pill_style ); ?>">
-										<?php echo esc_html( (string) $cat['name'] ); ?>
-									</span>
-								<?php endforeach; ?>
-							</div>
-						<?php endif; ?>
+				<div class="dp-card__body">
+					<?php if ( ! empty( $post['categories'] ) ) : ?>
+						<div class="dp-pills" aria-label="<?php esc_attr_e( 'Categorías', 'mc-intranet-core' ); ?>">
+							<?php foreach ( $post['categories'] as $cat ) : ?>
+								<?php
+								$color_idx  = abs( crc32( (string) $cat['slug'] ) ) % 8;
+								$pill_style = 'background:' . $dp_color_bg[ $color_idx ] . ';color:' . $dp_color_text[ $color_idx ] . ';';
+								?>
+								<span class="dp-pill" style="<?php echo esc_attr( $pill_style ); ?>">
+									<?php echo esc_html( (string) $cat['name'] ); ?>
+								</span>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
 
-						<h3 class="dp-card__title"><?php echo esc_html( (string) $post['title'] ); ?></h3>
+					<h3 class="dp-card__title"><?php echo esc_html( (string) $post['title'] ); ?></h3>
 
-						<?php if ( $post['excerpt'] ) : ?>
-							<p class="dp-card__excerpt"><?php echo esc_html( (string) $post['excerpt'] ); ?></p>
-						<?php endif; ?>
-					</div>
+					<?php if ( $post['excerpt'] ) : ?>
+						<p class="dp-card__excerpt"><?php echo esc_html( (string) $post['excerpt'] ); ?></p>
+					<?php endif; ?>
 
 					<div class="dp-card__footer">
 						<time class="dp-card__date" datetime="<?php echo esc_attr( (string) $post['date_iso'] ); ?>">
@@ -135,11 +228,104 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 							<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 						</span>
 					</div>
+				</div>
 
-					<div class="dp-card__accent-bar" aria-hidden="true"></div>
-				</a>
-			</article>
+				<div class="dp-card__accent-bar" aria-hidden="true"></div>
+			</a>
+		</article>
 		<?php endforeach; ?>
+
+		<?php if ( ! empty( $remaining_posts ) ) : ?>
+		<div class="dp-grid-section" role="presentation">
+			<?php foreach ( $remaining_posts as $i => $post ) : ?>
+				<?php
+				$has_image = ! empty( $post['image_url'] );
+				$img_alt   = trim( (string) $post['image_alt'] ) ?: esc_attr( (string) $post['title'] );
+				$parts     = preg_split( '/\s+/u', trim( (string) $post['title'] ) );
+				$initials  = '';
+				if ( is_array( $parts ) ) {
+					foreach ( $parts as $part ) {
+						if ( '' === $part ) { continue; }
+						$initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) );
+						if ( mb_strlen( $initials ) >= 2 ) { break; }
+					}
+				}
+				$card_accent = 'var(--color-primary, #4338CA)';
+				if ( ! empty( $post['categories'] ) ) {
+					$first_idx   = abs( crc32( (string) $post['categories'][0]['slug'] ) ) % 8;
+					$card_accent = $dp_accent_hex[ $first_idx ];
+				}
+				?>
+				<article
+					class="dp-card dp-card--vertical"
+					role="listitem"
+					data-search="<?php echo esc_attr( (string) $post['search_text'] ); ?>"
+					style="--dp-delay:<?php echo esc_attr( (string) min( $i + 3, 11 ) ); ?>;--dp-accent:<?php echo esc_attr( $card_accent ); ?>"
+				>
+					<a
+						class="dp-card__inner"
+						href="<?php echo esc_url( (string) $post['permalink'] ); ?>"
+						aria-label="<?php echo esc_attr( sprintf( __( 'Leer: %s', 'mc-intranet-core' ), (string) $post['title'] ) ); ?>"
+					>
+						<div class="dp-card__media-wrap">
+							<?php if ( $has_image ) : ?>
+								<figure class="dp-card__media">
+									<img
+										class="dp-card__img"
+										src="<?php echo esc_url( (string) $post['image_url'] ); ?>"
+										alt="<?php echo esc_attr( $img_alt ); ?>"
+										loading="lazy"
+										decoding="async"
+									/>
+								</figure>
+							<?php else : ?>
+								<div class="dp-card__placeholder" aria-hidden="true">
+									<span class="dp-card__initials"><?php echo esc_html( $initials ?: '--' ); ?></span>
+								</div>
+							<?php endif; ?>
+							<div class="dp-card__media-overlay" aria-hidden="true"></div>
+						</div>
+
+						<div class="dp-card__body">
+							<?php if ( ! empty( $post['categories'] ) ) : ?>
+								<div class="dp-pills" aria-label="<?php esc_attr_e( 'Categorías', 'mc-intranet-core' ); ?>">
+									<?php foreach ( $post['categories'] as $cat ) : ?>
+										<?php
+										$color_idx  = abs( crc32( (string) $cat['slug'] ) ) % 8;
+										$pill_style = 'background:' . $dp_color_bg[ $color_idx ] . ';color:' . $dp_color_text[ $color_idx ] . ';';
+										?>
+										<span class="dp-pill" style="<?php echo esc_attr( $pill_style ); ?>">
+											<?php echo esc_html( (string) $cat['name'] ); ?>
+										</span>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
+
+							<h3 class="dp-card__title"><?php echo esc_html( (string) $post['title'] ); ?></h3>
+
+							<?php if ( $post['excerpt'] ) : ?>
+								<p class="dp-card__excerpt"><?php echo esc_html( (string) $post['excerpt'] ); ?></p>
+							<?php endif; ?>
+						</div>
+
+						<div class="dp-card__footer">
+							<time class="dp-card__date" datetime="<?php echo esc_attr( (string) $post['date_iso'] ); ?>">
+								<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+								<?php echo esc_html( (string) $post['date'] ); ?>
+							</time>
+							<span class="dp-card__cta" aria-hidden="true">
+								<?php esc_html_e( 'Leer', 'mc-intranet-core' ); ?>
+								<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+							</span>
+						</div>
+
+						<div class="dp-card__accent-bar" aria-hidden="true"></div>
+					</a>
+				</article>
+			<?php endforeach; ?>
+		</div>
+		<?php endif; ?>
+
 	</div>
 
 	<div class="dp-empty-state" hidden>
@@ -232,25 +418,29 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #4338CA) 15%, transparent);
 }
 
-/* ── Grid ─────────────────────────────────────────────────── */
-.dp-grid {
+/* ── Feed container ───────────────────────────────────────── */
+.dp-feed {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+/* ── Grid section (remaining posts) ──────────────────────── */
+.dp-grid-section {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 1.125rem;
-	list-style: none;
-	margin: 0;
-	padding: 0;
 }
 
 @media (min-width: 640px) {
-	.dp-grid { grid-template-columns: repeat(2, 1fr); }
+	.dp-grid-section { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 1024px) {
-	.dp-grid { grid-template-columns: repeat(3, 1fr); }
+	.dp-grid-section { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ── Card ─────────────────────────────────────────────────── */
+/* ── Card base ────────────────────────────────────────────── */
 .dp-card {
 	border-radius: 0.875rem;
 	overflow: hidden;
@@ -282,6 +472,129 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 	transform: translateY(-3px);
 }
 
+/* ── Featured card ────────────────────────────────────────── */
+.dp-card--featured .dp-card__inner {
+	flex-direction: row;
+	min-height: 280px;
+}
+
+.dp-card--featured .dp-card__media-wrap {
+	flex: 0 0 48%;
+	position: relative;
+}
+
+.dp-card--featured .dp-card__media {
+	aspect-ratio: unset;
+	height: 100%;
+}
+
+.dp-card--featured .dp-card__body {
+	flex: 1;
+	justify-content: center;
+	padding: 1.75rem 1.5rem;
+}
+
+.dp-card--featured .dp-card__title {
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.dp-card--featured .dp-card__excerpt {
+	-webkit-line-clamp: 4;
+	font-size: 0.875rem;
+}
+
+.dp-card--featured .dp-card__footer {
+	border-top: none;
+	padding: 0;
+	margin-top: 1.25rem;
+}
+
+@media (max-width: 639px) {
+	.dp-card--featured .dp-card__inner {
+		flex-direction: column;
+	}
+	.dp-card--featured .dp-card__media-wrap {
+		flex: none;
+	}
+	.dp-card--featured .dp-card__media {
+		aspect-ratio: 16 / 9;
+		height: auto;
+	}
+}
+
+/* Featured badge */
+.dp-card__featured-badge {
+	position: absolute;
+	top: 0.75rem;
+	left: 0.75rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+	background: var(--dp-accent, var(--color-primary, #4338CA));
+	color: #fff;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	padding: 0.25rem 0.6rem;
+	border-radius: 9999px;
+	text-transform: uppercase;
+	z-index: 1;
+}
+
+/* ── Horizontal card ──────────────────────────────────────── */
+.dp-card--horizontal .dp-card__inner {
+	flex-direction: row;
+	min-height: 200px;
+}
+
+.dp-card--horizontal .dp-card__media-wrap {
+	flex: 0 0 38%;
+	position: relative;
+}
+
+.dp-card--horizontal .dp-card__media {
+	aspect-ratio: unset;
+	height: 100%;
+}
+
+.dp-card--horizontal .dp-card__body {
+	flex: 1;
+	justify-content: center;
+	padding: 1.25rem 1.25rem 1rem;
+}
+
+.dp-card--horizontal .dp-card__footer {
+	border-top: none;
+	padding: 0;
+	margin-top: 0.875rem;
+}
+
+.dp-card--horizontal .dp-card__excerpt {
+	-webkit-line-clamp: 3;
+}
+
+.dp-card--reverse .dp-card__inner {
+	flex-direction: row-reverse;
+}
+
+@media (max-width: 639px) {
+	.dp-card--horizontal .dp-card__inner,
+	.dp-card--reverse .dp-card__inner {
+		flex-direction: column;
+	}
+	.dp-card--horizontal .dp-card__media-wrap,
+	.dp-card--reverse .dp-card__media-wrap {
+		flex: none;
+	}
+	.dp-card--horizontal .dp-card__media,
+	.dp-card--reverse .dp-card__media {
+		aspect-ratio: 16 / 9;
+		height: auto;
+	}
+}
+
 /* ── Media ────────────────────────────────────────────────── */
 .dp-card__media-wrap {
 	position: relative;
@@ -309,11 +622,19 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 
 .dp-card__placeholder {
 	width: 100%;
+	height: 100%;
+	min-height: 160px;
 	aspect-ratio: 16 / 9;
 	background: linear-gradient(135deg, var(--color-primary, #4338CA) 0%, color-mix(in srgb, var(--color-primary, #4338CA) 60%, #6366F1) 100%);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.dp-card--featured .dp-card__placeholder,
+.dp-card--horizontal .dp-card__placeholder {
+	aspect-ratio: unset;
+	min-height: 100%;
 }
 
 .dp-card__initials {
@@ -402,6 +723,11 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 	margin-top: auto;
 }
 
+.dp-card--vertical .dp-card__footer {
+	padding: 0.625rem 1rem 0.75rem;
+	border-top: 1px solid #f3f4f6;
+}
+
 .dp-card__date {
 	display: inline-flex;
 	align-items: center;
@@ -483,7 +809,7 @@ $dp_accent_hex = [ '#818CF8', '#FCD34D', '#4ADE80', '#F9A8D4', '#38BDF8', '#FB92
 			.toString()
 			.toLowerCase()
 			.normalize('NFD')
-			.replace(/[\u0300-\u036f]/g, '');
+			.replace(/[̀-ͯ]/g, '');
 	}
 
 	function applyFilters() {
