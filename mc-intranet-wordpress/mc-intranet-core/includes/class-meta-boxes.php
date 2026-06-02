@@ -27,7 +27,7 @@ class MC_Intranet_Meta_Boxes
     }
 
     $screen = get_current_screen();
-    if (! $screen || 'mc_evento' !== $screen->post_type) {
+    if (! $screen || ! in_array($screen->post_type, ['mc_evento', 'mc_sede'], true)) {
       return;
     }
 
@@ -286,6 +286,8 @@ class MC_Intranet_Meta_Boxes
     $company_label = (string) get_post_meta($post->ID, 'company_label', true);
     $address_full  = (string) get_post_meta($post->ID, 'address_full', true);
     $maps_url      = (string) get_post_meta($post->ID, 'maps_url', true);
+    $logo_id       = absint((string) get_post_meta($post->ID, 'sede_logo_id', true));
+    $logo_url      = $logo_id > 0 ? wp_get_attachment_image_url($logo_id, 'thumbnail') : '';
 
   ?>
     <table class="form-table" role="presentation">
@@ -301,7 +303,110 @@ class MC_Intranet_Meta_Boxes
         <th><label for="mc_maps_url"><?php esc_html_e('Maps URL', 'mc-intranet-core'); ?></label></th>
         <td><input type="url" id="mc_maps_url" name="mc_maps_url" class="regular-text" value="<?php echo esc_attr($maps_url); ?>" /></td>
       </tr>
+      <tr>
+        <th><label for="mc_sede_logo_id"><?php esc_html_e('Logo de Sede', 'mc-intranet-core'); ?></label></th>
+        <td>
+          <input type="hidden" id="mc_sede_logo_id" name="mc_sede_logo_id" value="<?php echo esc_attr((string) $logo_id); ?>" />
+          <div id="mc-sede-logo-preview" style="margin-bottom:12px;">
+            <?php if ($logo_url) : ?>
+              <img src="<?php echo esc_url($logo_url); ?>" alt="" style="width:72px;height:72px;object-fit:contain;border-radius:8px;border:1px solid #d0d5dd;background:#fff;padding:8px;" />
+            <?php endif; ?>
+          </div>
+          <p>
+            <button type="button" class="button" id="mc-sede-logo-select"><?php esc_html_e('Seleccionar logo', 'mc-intranet-core'); ?></button>
+            <button type="button" class="button button-secondary" id="mc-sede-logo-clear"><?php esc_html_e('Quitar logo', 'mc-intranet-core'); ?></button>
+          </p>
+          <p class="description"><?php esc_html_e('Logo específico para esta sede. Si está vacío, el shortcode usará el logo de empresa por defecto.', 'mc-intranet-core'); ?></p>
+        </td>
+      </tr>
     </table>
+    <script>
+      (function() {
+        const initSedeLogoField = () => {
+          const selectButton = document.getElementById('mc-sede-logo-select');
+          const clearButton = document.getElementById('mc-sede-logo-clear');
+          const input = document.getElementById('mc_sede_logo_id');
+          const preview = document.getElementById('mc-sede-logo-preview');
+
+          if (!selectButton || !clearButton || !input || !preview) {
+            return;
+          }
+
+          if (selectButton.dataset.logoReady === '1') {
+            return;
+          }
+
+          if (typeof wp === 'undefined' || !wp.media) {
+            window.setTimeout(initSedeLogoField, 120);
+            return;
+          }
+
+          let frame;
+
+          const renderPreview = (imageUrl) => {
+            preview.innerHTML = '';
+
+            if (!imageUrl) {
+              return;
+            }
+
+            const image = document.createElement('img');
+            image.src = imageUrl;
+            image.alt = '';
+            image.style.width = '72px';
+            image.style.height = '72px';
+            image.style.objectFit = 'contain';
+            image.style.borderRadius = '8px';
+            image.style.border = '1px solid #d0d5dd';
+            image.style.background = '#fff';
+            image.style.padding = '8px';
+            preview.appendChild(image);
+          };
+
+          selectButton.dataset.logoReady = '1';
+
+          selectButton.addEventListener('click', () => {
+            if (!frame) {
+              frame = wp.media({
+                title: '<?php echo esc_js(__('Seleccionar logo de sede', 'mc-intranet-core')); ?>',
+                button: {
+                  text: '<?php echo esc_js(__('Usar logo', 'mc-intranet-core')); ?>'
+                },
+                multiple: false,
+                library: {
+                  type: 'image'
+                }
+              });
+
+              frame.on('select', () => {
+                const attachment = frame.state().get('selection').first();
+                if (!attachment) {
+                  return;
+                }
+
+                const data = attachment.toJSON();
+                input.value = data.id || '';
+                const imageUrl = data.sizes && data.sizes.thumbnail ? data.sizes.thumbnail.url : data.url;
+                renderPreview(imageUrl || '');
+              });
+            }
+
+            frame.open();
+          });
+
+          clearButton.addEventListener('click', () => {
+            input.value = '';
+            renderPreview('');
+          });
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initSedeLogoField);
+        } else {
+          initSedeLogoField();
+        }
+      }());
+    </script>
   <?php
   }
 
@@ -406,6 +511,7 @@ class MC_Intranet_Meta_Boxes
         $this->save_text_field($post_id, 'company_label', 'mc_company_label', 'sanitize_text_field');
         $this->save_textarea_field($post_id, 'address_full', 'mc_address_full');
         $this->save_text_field($post_id, 'maps_url', 'mc_maps_url', 'esc_url_raw');
+        $this->save_attachment_id_field($post_id, 'sede_logo_id', 'mc_sede_logo_id');
         break;
 
       case 'mc_directorio':
@@ -510,6 +616,22 @@ class MC_Intranet_Meta_Boxes
     }
 
     update_post_meta($post_id, $meta_key, implode(',', $ids));
+  }
+
+  private function save_attachment_id_field(int $post_id, string $meta_key, string $post_key): void
+  {
+    if (! isset($_POST[$post_key])) {
+      return;
+    }
+
+    $value = absint(wp_unslash($_POST[$post_key]));
+
+    if (0 === $value) {
+      delete_post_meta($post_id, $meta_key);
+      return;
+    }
+
+    update_post_meta($post_id, $meta_key, (string) $value);
   }
 
   private function save_initials_field(int $post_id, string $meta_key, string $post_key): void

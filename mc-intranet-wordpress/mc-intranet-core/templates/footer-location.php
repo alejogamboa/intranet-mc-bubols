@@ -12,7 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $company_label = (string) ( $sede_data['company'] ?? '' );
 $company_slug  = function_exists( 'mc_get_company_slug_from_label' ) ? mc_get_company_slug_from_label( $company_label ) : '';
-$company_logo  = function_exists( 'mc_get_company_logo_img' ) ? mc_get_company_logo_img( $company_slug, 'company-logo company-logo--location', '' ) : '';
+$sede_logo_id  = absint( (string) ( $sede_data['logo_id'] ?? 0 ) );
+$sede_logo     = $sede_logo_id > 0
+    ? wp_get_attachment_image( $sede_logo_id, 'medium', false, [
+        'class'    => 'company-logo company-logo--location',
+        'loading'  => 'lazy',
+        'decoding' => 'async',
+    ] )
+    : '';
+$company_logo  = $sede_logo ? $sede_logo : ( function_exists( 'mc_get_company_logo_img' ) ? mc_get_company_logo_img( $company_slug, 'company-logo company-logo--location', '' ) : '' );
 $icon_class    = $company_logo ? 'location-card__icon location-card__icon--brand' : 'location-card__icon';
 ?>
 <div class="location-card">

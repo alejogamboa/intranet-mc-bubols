@@ -23,6 +23,7 @@ class MC_Intranet_Shortcodes {
         add_shortcode( 'mc_formularios',              [ $this, 'shortcode_formularios' ] );
         add_shortcode( 'mc_company_portals',          [ $this, 'shortcode_company_portals' ] );
         add_shortcode( 'mc_sedes',                    [ $this, 'shortcode_sedes' ] );
+        add_shortcode( 'mc_sede',                     [ $this, 'shortcode_sedes' ] );
         add_shortcode( 'mc_reconocimientos',          [ $this, 'shortcode_reconocimientos' ] );
         add_shortcode( 'mc_eventos',                  [ $this, 'shortcode_eventos' ] );
         add_shortcode( 'mc_context_alert',            [ $this, 'shortcode_context_alert' ] );
@@ -303,6 +304,7 @@ class MC_Intranet_Shortcodes {
                 'name'     => esc_html( get_the_title() ),
                 'address'  => esc_html( (string) get_post_meta( get_the_ID(), 'address_full', true ) ),
                 'maps_url' => esc_url( (string) get_post_meta( get_the_ID(), 'maps_url', true ) ),
+                'logo_id'  => absint( (string) get_post_meta( get_the_ID(), 'sede_logo_id', true ) ),
             ];
             include MC_CORE_TEMPLATES . 'footer-location.php';
         }
