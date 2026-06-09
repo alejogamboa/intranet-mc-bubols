@@ -59,6 +59,40 @@ class MC_Intranet_Access_Control {
             wp_safe_redirect( self::get_denied_page_url() );
             exit;
         }
+
+        if ( ! $this->user_can_access_current_page() ) {
+            wp_safe_redirect( self::get_denied_page_url() );
+            exit;
+        }
+    }
+
+    private function user_can_access_current_page(): bool {
+        // La restricción por empresa solo aplica al rol suscriptor.
+        $user = wp_get_current_user();
+        if ( ! in_array( 'subscriber', (array) $user->roles, true ) ) {
+            return true;
+        }
+
+        // Solo se verifica en páginas/posts singulares.
+        if ( ! is_singular() ) {
+            return true;
+        }
+
+        $post_id = get_queried_object_id();
+        if ( ! $post_id ) {
+            return true;
+        }
+
+        $page_company = (string) get_post_meta( $post_id, 'company_context', true );
+
+        // Páginas sin empresa asignada son accesibles por todos.
+        if ( ! in_array( $page_company, [ 'anstra', 'essenza', 'budefry' ], true ) ) {
+            return true;
+        }
+
+        $user_company = MC_Intranet_User_Company::get_user_company( get_current_user_id() );
+
+        return $user_company === $page_company;
     }
 
     public function filter_login_url( string $login_url, string $redirect, bool $force_reauth ): string {
