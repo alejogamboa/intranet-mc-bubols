@@ -10,6 +10,10 @@
 <body <?php body_class(); ?> data-company="<?php echo mc_get_data_company_attr(); ?>">
   <?php wp_body_open(); ?>
 
+  <?php if ( function_exists( 'hfe_header_enabled' ) && hfe_header_enabled() ) : ?>
+    <?php do_action( 'hfe_header' ); ?>
+  <?php else : ?>
+
   <?php
   $nav_bg_color    = '';
   $nav_company_ctx = mc_get_company_context();
@@ -119,3 +123,4 @@
 
     </div>
   </nav>
+  <?php endif; ?>

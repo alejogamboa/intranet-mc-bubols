@@ -297,6 +297,7 @@ class MC_Intranet_Shortcodes {
         }
 
         ob_start();
+        echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">';
         while ( $query->have_posts() ) {
             $query->the_post();
             $sede_data = [
@@ -308,6 +309,7 @@ class MC_Intranet_Shortcodes {
             ];
             include MC_CORE_TEMPLATES . 'footer-location.php';
         }
+        echo '</div>';
         wp_reset_postdata();
         return ob_get_clean();
     }
