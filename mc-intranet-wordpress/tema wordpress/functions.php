@@ -38,7 +38,7 @@ function mc_intranet_theme_setup() {
 
 add_action( 'wp_enqueue_scripts', 'mc_intranet_enqueue_scripts' );
 function mc_intranet_enqueue_scripts() {
-    $ver = '2.0.10';
+    $ver = '2.0.13';
     $dir = get_template_directory_uri();
 
     // 1. Design tokens (base de variables CSS — siempre primero)
@@ -503,6 +503,95 @@ function mc_intranet_save_menu_item_svg_field( $menu_id, $menu_item_db_id, $args
     }
 
     update_post_meta( $menu_item_db_id, '_menu_item_mc_svg_icon', $safe_svg );
+}
+
+/**
+ * Campo custom en Apariencia > Menús para restringir item por empresa.
+ * Dejarlo en "Todas las empresas" lo hace visible para todos.
+ */
+add_action( 'wp_nav_menu_item_custom_fields', 'mc_intranet_menu_item_company_field', 10, 5 );
+function mc_intranet_menu_item_company_field( $item_id, $item, $depth, $args, $current_object_id ): void {
+    $company   = (string) get_post_meta( $item_id, '_menu_item_mc_company', true );
+    $companies = [
+        ''           => __( 'Todas las empresas', 'mc-intranet' ),
+        'anstra'     => 'Projection Anstra',
+        'essenza'    => 'Essenza Foods',
+        'budefry'    => 'Budefry SAS',
+        'interactua' => 'Interactúa',
+    ];
+    ?>
+    <p class="description description-wide">
+        <label for="edit-menu-item-mc-company-<?php echo esc_attr( $item_id ); ?>">
+            <?php esc_html_e( 'Visible para empresa', 'mc-intranet' ); ?><br>
+            <select
+                id="edit-menu-item-mc-company-<?php echo esc_attr( $item_id ); ?>"
+                class="widefat"
+                name="menu-item-mc-company[<?php echo esc_attr( $item_id ); ?>]">
+                <?php foreach ( $companies as $value => $label ) : ?>
+                    <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $company, $value ); ?>>
+                        <?php echo esc_html( $label ); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+    </p>
+    <?php
+}
+
+/**
+ * Guarda la restricción de empresa de cada item del menú.
+ */
+add_action( 'wp_update_nav_menu_item', 'mc_intranet_save_menu_item_company_field', 10, 3 );
+function mc_intranet_save_menu_item_company_field( $menu_id, $menu_item_db_id, $args ): void {
+    if ( ! current_user_can( 'edit_theme_options' ) ) {
+        return;
+    }
+
+    $allowed = [ '', 'anstra', 'essenza', 'budefry', 'interactua' ];
+    $raw     = isset( $_POST['menu-item-mc-company'][ $menu_item_db_id ] )
+        ? sanitize_key( wp_unslash( $_POST['menu-item-mc-company'][ $menu_item_db_id ] ) )
+        : '';
+
+    if ( ! in_array( $raw, $allowed, true ) ) {
+        $raw = '';
+    }
+
+    if ( '' === $raw ) {
+        delete_post_meta( $menu_item_db_id, '_menu_item_mc_company' );
+    } else {
+        update_post_meta( $menu_item_db_id, '_menu_item_mc_company', $raw );
+    }
+}
+
+/**
+ * Filtra los items del menú principal según la empresa del usuario.
+ * Items sin restricción son visibles para todos.
+ * Items con empresa X solo son visibles para usuarios de esa empresa (admins/editores ven todo).
+ */
+add_filter( 'wp_nav_menu_objects', 'mc_intranet_filter_menu_by_company', 10, 2 );
+function mc_intranet_filter_menu_by_company( array $items, $args ): array {
+    if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+        return $items;
+    }
+
+    // Admins y editores ven todos los ítems.
+    if ( current_user_can( 'edit_posts' ) ) {
+        return $items;
+    }
+
+    $user_company = '';
+    if ( is_user_logged_in() && class_exists( 'MC_Intranet_User_Company' ) ) {
+        $user_company = (string) MC_Intranet_User_Company::get_user_company( get_current_user_id() );
+    }
+
+    return array_values( array_filter( $items, static function ( $item ) use ( $user_company ): bool {
+        $item_company = (string) get_post_meta( $item->ID, '_menu_item_mc_company', true );
+        // Sin restricción → visible para todos.
+        if ( '' === $item_company ) {
+            return true;
+        }
+        return $item_company === $user_company;
+    } ) );
 }
 
 /**

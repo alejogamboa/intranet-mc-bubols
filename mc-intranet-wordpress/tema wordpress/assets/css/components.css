@@ -19,13 +19,28 @@ html.mc-adminbar-hidden #wpadminbar {
 }
 
 .global-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   height: var(--nav-height);
   background-color: var(--color-company);
   box-shadow: var(--shadow-md);
+  transition: top 220ms ease;
 }
+
+/* When the WP admin bar is present, start the nav below it from the first paint */
+.admin-bar .global-nav {
+  top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+  .admin-bar .global-nav {
+    top: 46px;
+  }
+}
+
 
 .global-nav__inner {
   display: flex;
@@ -1065,7 +1080,7 @@ html.mc-adminbar-hidden #wpadminbar {
 .location-card__company {
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
-  color: var(--color-company-accent);
+  color: var(--sede-font-color, var(--color-company-accent));
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -1088,14 +1103,15 @@ html.mc-adminbar-hidden #wpadminbar {
   gap: var(--space-1);
   font-size: var(--text-xs);
   font-weight: var(--weight-medium);
-  color: var(--color-company-accent);
+  color: var(--sede-font-color, var(--color-company-accent));
   text-decoration: none;
   margin-top: var(--space-1);
   transition: var(--transition-colors);
 }
 
 .location-card__link:hover {
-  color: white;
+  color: var(--sede-font-color, white);
+  opacity: 0.85;
 }
 
 .location-card__link svg {

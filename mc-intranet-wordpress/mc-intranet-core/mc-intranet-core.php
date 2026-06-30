@@ -37,6 +37,7 @@ require_once MC_CORE_DIR . 'includes/class-directorio-importer.php';
 require_once MC_CORE_DIR . 'includes/class-branding-settings.php';
 require_once MC_CORE_DIR . 'includes/class-user-company.php';
 require_once MC_CORE_DIR . 'includes/class-user-importer.php';
+require_once MC_CORE_DIR . 'includes/class-help-system.php';
 
 // ─── Hooks de activación / desactivación ─────────────────────────────────────
 

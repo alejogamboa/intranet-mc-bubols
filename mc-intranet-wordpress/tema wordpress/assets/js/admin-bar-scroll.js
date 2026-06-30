@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     var adminBar = document.getElementById('wpadminbar');
-    if (!adminBar) {
-        return;
-    }
+    var globalNav = document.querySelector('.global-nav');
+    if (!adminBar || !globalNav) return;
 
     var root = document.documentElement;
     var hiddenClass = 'mc-adminbar-hidden';
@@ -10,13 +9,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function syncAdminBar() {
         if (window.scrollY > 8) {
             root.classList.add(hiddenClass);
-            return;
+            globalNav.style.top = '0px';
+        } else {
+            root.classList.remove(hiddenClass);
+            globalNav.style.top = adminBar.offsetHeight + 'px';
         }
-
-        root.classList.remove(hiddenClass);
     }
 
     syncAdminBar();
-
     window.addEventListener('scroll', syncAdminBar, { passive: true });
 });

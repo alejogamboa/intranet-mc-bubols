@@ -23,9 +23,8 @@ $sede_logo       = $sede_logo_id > 0
     : '';
 $company_logo  = $sede_logo ? $sede_logo : ( function_exists( 'mc_get_company_logo_img' ) ? mc_get_company_logo_img( $company_slug, 'company-logo company-logo--location', '' ) : '' );
 $icon_class    = $company_logo ? 'location-card__icon location-card__icon--brand' : 'location-card__icon';
-$card_style    = $sede_font_color ? 'style="--sede-font-color:' . esc_attr( $sede_font_color ) . ';"' : '';
 ?>
-<div class="location-card" <?php echo $card_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+<div class="location-card"<?php if ( $sede_font_color ) : ?> style="--sede-font-color:<?php echo esc_attr( $sede_font_color ); ?>;"<?php endif; ?>>
     <div class="<?php echo esc_attr( $icon_class ); ?>" aria-hidden="true">
         <?php if ( $company_logo ) : ?>
             <?php echo $company_logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
