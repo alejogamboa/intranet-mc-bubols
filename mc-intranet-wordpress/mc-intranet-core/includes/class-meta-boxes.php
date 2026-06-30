@@ -80,6 +80,15 @@ class MC_Intranet_Meta_Boxes
       'normal',
       'default'
     );
+
+    add_meta_box(
+      'mc_company_portal_meta',
+      __('Datos del Portal de Empresa', 'mc-intranet-core'),
+      [$this, 'render_company_portal_meta_box'],
+      'mc_company_portal',
+      'normal',
+      'default'
+    );
   }
 
   public function render_formulario_meta_box(WP_Post $post): void
@@ -288,6 +297,7 @@ class MC_Intranet_Meta_Boxes
     $maps_url      = (string) get_post_meta($post->ID, 'maps_url', true);
     $logo_id       = absint((string) get_post_meta($post->ID, 'sede_logo_id', true));
     $logo_url      = $logo_id > 0 ? wp_get_attachment_image_url($logo_id, 'thumbnail') : '';
+    $font_color    = (string) get_post_meta($post->ID, 'sede_font_color', true);
 
   ?>
     <table class="form-table" role="presentation">
@@ -302,6 +312,18 @@ class MC_Intranet_Meta_Boxes
       <tr>
         <th><label for="mc_maps_url"><?php esc_html_e('Maps URL', 'mc-intranet-core'); ?></label></th>
         <td><input type="url" id="mc_maps_url" name="mc_maps_url" class="regular-text" value="<?php echo esc_attr($maps_url); ?>" /></td>
+      </tr>
+      <tr>
+        <th><label><?php esc_html_e('Color de fuente', 'mc-intranet-core'); ?></label></th>
+        <td>
+          <input type="hidden" id="mc_sede_font_color" name="mc_sede_font_color" value="<?php echo esc_attr($font_color); ?>" />
+          <input type="color" id="mc_sede_font_color_picker" value="<?php echo esc_attr($font_color ?: '#ffffff'); ?>" <?php echo $font_color ? '' : 'disabled'; ?> />
+          <label style="margin-left:8px;">
+            <input type="checkbox" id="mc_sede_font_color_active" <?php checked((bool) $font_color); ?> />
+            <?php esc_html_e('Personalizar', 'mc-intranet-core'); ?>
+          </label>
+          <p class="description"><?php esc_html_e('Color del texto (nombre y dirección) en la tarjeta de sede. Desactiva para usar los colores del tema.', 'mc-intranet-core'); ?></p>
+        </td>
       </tr>
       <tr>
         <th><label for="mc_sede_logo_id"><?php esc_html_e('Logo de Sede', 'mc-intranet-core'); ?></label></th>
@@ -400,10 +422,38 @@ class MC_Intranet_Meta_Boxes
           });
         };
 
+        const initSedeFontColorField = () => {
+          const hidden  = document.getElementById('mc_sede_font_color');
+          const picker  = document.getElementById('mc_sede_font_color_picker');
+          const checkbox = document.getElementById('mc_sede_font_color_active');
+
+          if (!hidden || !picker || !checkbox) {
+            return;
+          }
+
+          const syncPickerState = () => {
+            picker.disabled = !checkbox.checked;
+            hidden.value = checkbox.checked ? picker.value : '';
+          };
+
+          checkbox.addEventListener('change', syncPickerState);
+          picker.addEventListener('input', () => {
+            if (checkbox.checked) {
+              hidden.value = picker.value;
+            }
+          });
+
+          syncPickerState();
+        };
+
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initSedeLogoField);
+          document.addEventListener('DOMContentLoaded', () => {
+            initSedeLogoField();
+            initSedeFontColorField();
+          });
         } else {
           initSedeLogoField();
+          initSedeFontColorField();
         }
       }());
     </script>
@@ -454,6 +504,78 @@ class MC_Intranet_Meta_Boxes
       <tr>
         <th><label for="mc_dc_email"><?php esc_html_e('Email', 'mc-intranet-core'); ?></label></th>
         <td><input type="email" id="mc_dc_email" name="mc_dc_email" class="regular-text" value="<?php echo esc_attr($email); ?>" /></td>
+      </tr>
+    </table>
+<?php
+  }
+
+  public function render_company_portal_meta_box(WP_Post $post): void
+  {
+    wp_nonce_field('mc_intranet_meta_boxes_action', 'mc_intranet_meta_boxes_nonce');
+
+    $slug              = (string) get_post_meta($post->ID, 'portal_slug', true);
+    $name              = (string) get_post_meta($post->ID, 'portal_name', true);
+    $desc              = (string) get_post_meta($post->ID, 'portal_desc', true);
+    $color_start       = (string) get_post_meta($post->ID, 'portal_color_start', true);
+    $color_end         = (string) get_post_meta($post->ID, 'portal_color_end', true);
+    $link_color        = (string) get_post_meta($post->ID, 'portal_link_color', true);
+    $header_bg_color   = (string) get_post_meta($post->ID, 'portal_header_bg_color', true);
+    $header_text_color = (string) get_post_meta($post->ID, 'portal_header_text_color', true);
+    $url               = (string) get_post_meta($post->ID, 'portal_url', true);
+    $tags              = (string) get_post_meta($post->ID, 'portal_tags', true);
+    $count_label       = (string) get_post_meta($post->ID, 'portal_count_label', true);
+
+?>
+    <table class="form-table" role="presentation">
+      <tr>
+        <th><label for="mc_portal_slug"><?php esc_html_e('Slug', 'mc-intranet-core'); ?></label></th>
+        <td>
+          <input type="text" id="mc_portal_slug" name="mc_portal_slug" class="regular-text" value="<?php echo esc_attr($slug); ?>" />
+          <p class="description"><?php esc_html_e('Ejemplo: anstra, essenza, budefry, interactua.', 'mc-intranet-core'); ?></p>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_name"><?php esc_html_e('Nombre', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_name" name="mc_portal_name" class="regular-text" value="<?php echo esc_attr($name); ?>" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_desc"><?php esc_html_e('Descripción', 'mc-intranet-core'); ?></label></th>
+        <td><textarea id="mc_portal_desc" name="mc_portal_desc" class="large-text" rows="3"><?php echo esc_textarea($desc); ?></textarea></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_color_start"><?php esc_html_e('Color Start', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_color_start" name="mc_portal_color_start" class="regular-text" value="<?php echo esc_attr($color_start); ?>" placeholder="#1A2E52" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_color_end"><?php esc_html_e('Color End', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_color_end" name="mc_portal_color_end" class="regular-text" value="<?php echo esc_attr($color_end); ?>" placeholder="#253E6E" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_link_color"><?php esc_html_e('Link Color', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_link_color" name="mc_portal_link_color" class="regular-text" value="<?php echo esc_attr($link_color); ?>" placeholder="#1A2E52" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_header_bg_color"><?php esc_html_e('Header BG Color', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_header_bg_color" name="mc_portal_header_bg_color" class="regular-text" value="<?php echo esc_attr($header_bg_color); ?>" placeholder="#FFFFFF" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_header_text_color"><?php esc_html_e('Header Text Color', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_header_text_color" name="mc_portal_header_text_color" class="regular-text" value="<?php echo esc_attr($header_text_color); ?>" placeholder="#0F172A" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_url"><?php esc_html_e('URL', 'mc-intranet-core'); ?></label></th>
+        <td><input type="url" id="mc_portal_url" name="mc_portal_url" class="regular-text" value="<?php echo esc_attr($url); ?>" /></td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_tags"><?php esc_html_e('Tags', 'mc-intranet-core'); ?></label></th>
+        <td>
+          <input type="text" id="mc_portal_tags" name="mc_portal_tags" class="regular-text" value="<?php echo esc_attr($tags); ?>" />
+          <p class="description"><?php esc_html_e('Separadas por coma. Ejemplo: RRHH, Contabilidad, Administración.', 'mc-intranet-core'); ?></p>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="mc_portal_count_label"><?php esc_html_e('Count Label', 'mc-intranet-core'); ?></label></th>
+        <td><input type="text" id="mc_portal_count_label" name="mc_portal_count_label" class="regular-text" value="<?php echo esc_attr($count_label); ?>" /></td>
       </tr>
     </table>
 <?php
@@ -512,6 +634,7 @@ class MC_Intranet_Meta_Boxes
         $this->save_textarea_field($post_id, 'address_full', 'mc_address_full');
         $this->save_text_field($post_id, 'maps_url', 'mc_maps_url', 'esc_url_raw');
         $this->save_attachment_id_field($post_id, 'sede_logo_id', 'mc_sede_logo_id');
+        $this->save_hex_color_field($post_id, 'sede_font_color', 'mc_sede_font_color');
         break;
 
       case 'mc_directorio':
@@ -529,6 +652,20 @@ class MC_Intranet_Meta_Boxes
         $this->save_text_field($post_id, 'nombre',  'mc_dc_nombre',  'sanitize_text_field');
         $this->save_text_field($post_id, 'celular', 'mc_dc_celular', 'sanitize_text_field');
         $this->save_text_field($post_id, 'email',   'mc_dc_email',   'sanitize_email');
+        break;
+
+      case 'mc_company_portal':
+        $this->save_text_field($post_id, 'portal_slug', 'mc_portal_slug', 'sanitize_key');
+        $this->save_text_field($post_id, 'portal_name', 'mc_portal_name', 'sanitize_text_field');
+        $this->save_textarea_field($post_id, 'portal_desc', 'mc_portal_desc');
+        $this->save_hex_color_field($post_id, 'portal_color_start', 'mc_portal_color_start');
+        $this->save_hex_color_field($post_id, 'portal_color_end', 'mc_portal_color_end');
+        $this->save_hex_color_field($post_id, 'portal_link_color', 'mc_portal_link_color');
+        $this->save_hex_color_field($post_id, 'portal_header_bg_color', 'mc_portal_header_bg_color');
+        $this->save_hex_color_field($post_id, 'portal_header_text_color', 'mc_portal_header_text_color');
+        $this->save_text_field($post_id, 'portal_url', 'mc_portal_url', 'esc_url_raw');
+        $this->save_csv_list_field($post_id, 'portal_tags', 'mc_portal_tags');
+        $this->save_text_field($post_id, 'portal_count_label', 'mc_portal_count_label', 'sanitize_text_field');
         break;
     }
   }
@@ -632,6 +769,49 @@ class MC_Intranet_Meta_Boxes
     }
 
     update_post_meta($post_id, $meta_key, (string) $value);
+  }
+
+  private function save_hex_color_field(int $post_id, string $meta_key, string $post_key): void
+  {
+    if (! isset($_POST[$post_key])) {
+      return;
+    }
+
+    $value = sanitize_hex_color(wp_unslash($_POST[$post_key]));
+
+    if ('' === $value || null === $value) {
+      delete_post_meta($post_id, $meta_key);
+      return;
+    }
+
+    update_post_meta($post_id, $meta_key, $value);
+  }
+
+  private function save_csv_list_field(int $post_id, string $meta_key, string $post_key): void
+  {
+    if (! isset($_POST[$post_key])) {
+      return;
+    }
+
+    $raw_items = explode(',', sanitize_text_field(wp_unslash($_POST[$post_key])));
+    $clean_items = [];
+
+    foreach ($raw_items as $item) {
+      $item = trim($item);
+
+      if ('' === $item) {
+        continue;
+      }
+
+      $clean_items[] = $item;
+    }
+
+    if ([] === $clean_items) {
+      delete_post_meta($post_id, $meta_key);
+      return;
+    }
+
+    update_post_meta($post_id, $meta_key, implode(', ', $clean_items));
   }
 
   private function save_initials_field(int $post_id, string $meta_key, string $post_key): void

@@ -8,6 +8,7 @@
  *  - mc_evento        → Eventos del portal Interactúa
  *  - mc_reconocimiento → Reconocimientos corporativos
  *  - mc_sede          → Sedes para el footer global
+ *  - mc_company_portal → Portales corporativos para el shortcode [mc_company_portals]
  *
  * @package MC_Intranet_Core
  */
@@ -31,6 +32,7 @@ class MC_Intranet_Post_Types
     $this->register_reconocimiento();
     $this->register_sede();
     $this->register_directorio_contactos();
+    $this->register_company_portal();
   }
 
   // ─── mc_formulario ───────────────────────────────────────────────────────
@@ -155,6 +157,34 @@ class MC_Intranet_Post_Types
       'supports'        => ['title', 'page-attributes'],
       'rewrite'         => false,
       'has_archive'     => false,
+    ]);
+  }
+
+  // ─── mc_company_portal ───────────────────────────────────────────────────
+
+  private function register_company_portal(): void
+  {
+    register_post_type('mc_company_portal', [
+      'labels'          => [
+        'name'               => __('Portales de Empresa', 'mc-intranet-core'),
+        'singular_name'      => __('Portal de Empresa', 'mc-intranet-core'),
+        'add_new_item'       => __('Agregar Portal de Empresa', 'mc-intranet-core'),
+        'edit_item'          => __('Editar Portal de Empresa', 'mc-intranet-core'),
+        'search_items'       => __('Buscar Portales de Empresa', 'mc-intranet-core'),
+        'not_found'          => __('No se encontraron portales.', 'mc-intranet-core'),
+        'not_found_in_trash' => __('No hay portales en la papelera.', 'mc-intranet-core'),
+      ],
+      'public'          => false,
+      'show_ui'         => true,
+      'show_in_menu'    => true,
+      'show_in_rest'    => false,
+      'menu_icon'       => 'dashicons-grid-view',
+      'menu_position'   => 30,
+      'supports'        => ['title', 'page-attributes'],
+      'rewrite'         => false,
+      'has_archive'     => false,
+      'capability_type' => 'post',
+      'map_meta_cap'    => true,
     ]);
   }
 }

@@ -369,6 +369,184 @@ function mc_intranet_nav_fallback() {
 }
 
 /**
+ * Whitelist de etiquetas/atributos SVG permitidos para iconos de menú.
+ *
+ * @return array<string, array<string, bool>>
+ */
+function mc_intranet_allowed_menu_svg_tags(): array {
+    return [
+        'svg'      => [
+            'xmlns'             => true,
+            'viewBox'           => true,
+            'width'             => true,
+            'height'            => true,
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+            'stroke-linecap'    => true,
+            'stroke-linejoin'   => true,
+            'aria-hidden'       => true,
+            'focusable'         => true,
+            'class'             => true,
+            'role'              => true,
+        ],
+        'path'     => [
+            'd'                 => true,
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+            'stroke-linecap'    => true,
+            'stroke-linejoin'   => true,
+        ],
+        'circle'   => [
+            'cx'                => true,
+            'cy'                => true,
+            'r'                 => true,
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+        ],
+        'rect'     => [
+            'x'                 => true,
+            'y'                 => true,
+            'width'             => true,
+            'height'            => true,
+            'rx'                => true,
+            'ry'                => true,
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+        ],
+        'line'     => [
+            'x1'                => true,
+            'y1'                => true,
+            'x2'                => true,
+            'y2'                => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+            'stroke-linecap'    => true,
+        ],
+        'polyline' => [
+            'points'            => true,
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+            'stroke-linecap'    => true,
+            'stroke-linejoin'   => true,
+        ],
+        'polygon'  => [
+            'points'            => true,
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+            'stroke-linecap'    => true,
+            'stroke-linejoin'   => true,
+        ],
+        'g'        => [
+            'fill'              => true,
+            'stroke'            => true,
+            'stroke-width'      => true,
+            'transform'         => true,
+            'class'             => true,
+        ],
+        'title'    => [],
+        'desc'     => [],
+    ];
+}
+
+/**
+ * Campo custom en Apariencia > Menús para definir icono SVG por item.
+ */
+add_action( 'wp_nav_menu_item_custom_fields', 'mc_intranet_menu_item_svg_field', 10, 5 );
+function mc_intranet_menu_item_svg_field( $item_id, $item, $depth, $args, $current_object_id ): void {
+    $svg = (string) get_post_meta( $item_id, '_menu_item_mc_svg_icon', true );
+    ?>
+    <p class="description description-wide">
+        <label for="edit-menu-item-mc-svg-icon-<?php echo esc_attr( $item_id ); ?>">
+            <?php esc_html_e( 'Icono SVG (inline)', 'mc-intranet' ); ?><br>
+            <textarea
+                id="edit-menu-item-mc-svg-icon-<?php echo esc_attr( $item_id ); ?>"
+                class="widefat code edit-menu-item-custom"
+                rows="4"
+                name="menu-item-mc-svg-icon[<?php echo esc_attr( $item_id ); ?>]"><?php echo esc_textarea( $svg ); ?></textarea>
+        </label>
+    </p>
+    <?php
+}
+
+/**
+ * Guarda el SVG de cada item del menú principal.
+ */
+add_action( 'wp_update_nav_menu_item', 'mc_intranet_save_menu_item_svg_field', 10, 3 );
+function mc_intranet_save_menu_item_svg_field( $menu_id, $menu_item_db_id, $args ): void {
+    if ( ! current_user_can( 'edit_theme_options' ) ) {
+        return;
+    }
+
+    if ( ! isset( $_POST['menu-item-mc-svg-icon'][ $menu_item_db_id ] ) ) {
+        delete_post_meta( $menu_item_db_id, '_menu_item_mc_svg_icon' );
+        return;
+    }
+
+    $raw_svg = trim( (string) wp_unslash( $_POST['menu-item-mc-svg-icon'][ $menu_item_db_id ] ) );
+
+    if ( '' === $raw_svg ) {
+        delete_post_meta( $menu_item_db_id, '_menu_item_mc_svg_icon' );
+        return;
+    }
+
+    $safe_svg = wp_kses( $raw_svg, mc_intranet_allowed_menu_svg_tags() );
+
+    if ( '' === $safe_svg ) {
+        delete_post_meta( $menu_item_db_id, '_menu_item_mc_svg_icon' );
+        return;
+    }
+
+    update_post_meta( $menu_item_db_id, '_menu_item_mc_svg_icon', $safe_svg );
+}
+
+/**
+ * Agrega clase de estilo al <a> del menú principal.
+ */
+add_filter( 'nav_menu_link_attributes', 'mc_intranet_primary_nav_link_class', 10, 4 );
+function mc_intranet_primary_nav_link_class( array $atts, $menu_item, $args, $depth ): array {
+    if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+        return $atts;
+    }
+
+    $existing      = isset( $atts['class'] ) ? (string) $atts['class'] : '';
+    $atts['class'] = trim( $existing . ' global-nav__link' );
+
+    return $atts;
+}
+
+/**
+ * Renderiza el icono SVG al inicio del texto del item de menú.
+ */
+add_filter( 'nav_menu_item_title', 'mc_intranet_primary_nav_item_title_with_svg', 10, 4 );
+function mc_intranet_primary_nav_item_title_with_svg( string $title, $menu_item, $args, $depth ): string {
+    if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+        return $title;
+    }
+
+    $raw_svg = (string) get_post_meta( $menu_item->ID, '_menu_item_mc_svg_icon', true );
+    if ( '' === trim( $raw_svg ) ) {
+        return $title;
+    }
+
+    $safe_svg = wp_kses( $raw_svg, mc_intranet_allowed_menu_svg_tags() );
+    if ( '' === $safe_svg ) {
+        return $title;
+    }
+
+    return sprintf(
+        '<span class="global-nav__icon" aria-hidden="true">%1$s</span><span class="global-nav__text">%2$s</span>',
+        $safe_svg,
+        esc_html( $title )
+    );
+}
+
+/**
  * Retorna true cuando el modo diagnóstico de branding está activo.
  * Solo para administradores autenticados.
  *

@@ -10,10 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$company_label = (string) ( $sede_data['company'] ?? '' );
-$company_slug  = function_exists( 'mc_get_company_slug_from_label' ) ? mc_get_company_slug_from_label( $company_label ) : '';
-$sede_logo_id  = absint( (string) ( $sede_data['logo_id'] ?? 0 ) );
-$sede_logo     = $sede_logo_id > 0
+$company_label   = (string) ( $sede_data['company'] ?? '' );
+$company_slug    = function_exists( 'mc_get_company_slug_from_label' ) ? mc_get_company_slug_from_label( $company_label ) : '';
+$sede_logo_id    = absint( (string) ( $sede_data['logo_id'] ?? 0 ) );
+$sede_font_color = sanitize_hex_color( (string) ( $sede_data['font_color'] ?? '' ) );
+$sede_logo       = $sede_logo_id > 0
     ? wp_get_attachment_image( $sede_logo_id, 'medium', false, [
         'class'    => 'company-logo company-logo--location',
         'loading'  => 'lazy',
@@ -22,8 +23,9 @@ $sede_logo     = $sede_logo_id > 0
     : '';
 $company_logo  = $sede_logo ? $sede_logo : ( function_exists( 'mc_get_company_logo_img' ) ? mc_get_company_logo_img( $company_slug, 'company-logo company-logo--location', '' ) : '' );
 $icon_class    = $company_logo ? 'location-card__icon location-card__icon--brand' : 'location-card__icon';
+$card_style    = $sede_font_color ? 'style="--sede-font-color:' . esc_attr( $sede_font_color ) . ';"' : '';
 ?>
-<div class="location-card">
+<div class="location-card" <?php echo $card_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
     <div class="<?php echo esc_attr( $icon_class ); ?>" aria-hidden="true">
         <?php if ( $company_logo ) : ?>
             <?php echo $company_logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

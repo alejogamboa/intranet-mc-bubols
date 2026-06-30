@@ -41,50 +41,14 @@
       $essenza_label = mc_get_company_display_name( 'essenza', 'Essenza Foods' );
       $budefry_label = mc_get_company_display_name( 'budefry', 'Budefry SAS' );
 
-      $nav_items = [
-        [
-          'url'   => home_url('/'),
-          'label' => 'Inicio',
-          'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>',
-        ],
-        [
-          'url'   => home_url('/anstra/'),
-          'label' => $anstra_label,
-          'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="8" width="7" height="13" rx="1"/></svg>',
-        ],
-        [
-          'url'   => home_url('/essenza/'),
-          'label' => $essenza_label,
-          'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v4"/><path d="M18 2v4"/><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M3 10h18"/></svg>',
-        ],
-        [
-          'url'   => home_url('/budefry/'),
-          'label' => $budefry_label,
-          'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8l7-4v17"/><path d="M12 9h7v12"/></svg>',
-        ],
-        [
-          'url'   => home_url('/interactua/'),
-          'label' => 'Interactúa',
-          'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4"/><path d="M12 17v4"/><path d="M3 12h4"/><path d="M17 12h4"/><path d="m5.6 5.6 2.8 2.8"/><path d="m15.6 15.6 2.8 2.8"/><path d="m18.4 5.6-2.8 2.8"/><path d="m8.4 15.6-2.8 2.8"/></svg>',
-        ],
-      ];
-
-      echo '<ul class="global-nav__links" role="list" id="nav-links">';
-      foreach ($nav_items as $item) {
-        $is_current = untrailingslashit(home_url(add_query_arg([], $GLOBALS['wp']->request))) === untrailingslashit($item['url']);
-        if (home_url('/') === $item['url'] && is_front_page()) {
-          $is_current = true;
-        }
-
-        printf(
-          '<li><a href="%s" class="global-nav__link"%s>%s%s</a></li>',
-          esc_url($item['url']),
-          $is_current ? ' aria-current="page"' : '',
-          $item['icon'],
-          esc_html($item['label'])
-        );
-      }
-      echo '</ul>';
+      wp_nav_menu( [
+        'theme_location' => 'primary',
+        'container'      => false,
+        'menu_id'        => 'nav-links',
+        'menu_class'     => 'global-nav__links',
+        'items_wrap'     => '<ul id="%1$s" class="%2$s" role="list">%3$s</ul>',
+        'fallback_cb'    => 'mc_intranet_nav_fallback',
+      ] );
       ?>
 
       <?php

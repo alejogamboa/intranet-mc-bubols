@@ -29,6 +29,18 @@ La intranet es un portal de enrutamiento hacia recursos de Google Workspace:
 
 Regla UX principal: cualquier formulario debe alcanzarse en maximo 2 clics desde Inicio.
 
+## 2.1 Politica operativa: Inicio 100% Elementor
+La portada (Inicio) se administra exclusivamente desde Elementor.
+
+1. El archivo `front-page.php` debe actuar como wrapper minimo (header, footer y `the_content()`).
+2. El contenido visual de Inicio (hero, secciones, orden de bloques) se edita en Elementor, no en PHP.
+3. Los bloques funcionales del negocio se insertan con shortcode en Elementor, por ejemplo:
+- `[mc_company_portals]`
+- `[mc_formularios empresa="mc" area="administracion"]`
+- `[mc_formularios empresa="mc" area="tic"]`
+- `[mc_formularios empresa="mc" area="gestiones"]`
+4. Para evitar doble fuente de verdad, no volver a hardcodear contenido de Home en plantilla.
+
 ## 3. Hallazgos importantes del estado actual
 Basado en la revision de archivos del tema y wireframes:
 

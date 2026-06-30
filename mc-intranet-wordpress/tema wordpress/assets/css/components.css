@@ -752,6 +752,21 @@ html.mc-adminbar-hidden #wpadminbar {
   }
 }
 
+/* Home 100% Elementor: el widget shortcode debe ocupar todo el ancho
+   para que el control de márgenes/spacing quede en Elementor. */
+.home .entry-content .elementor-widget-shortcode,
+.home .entry-content .elementor-widget-shortcode > .elementor-widget-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Evita doble contención en el shortcode de portales cuando vive en Elementor. */
+.home .entry-content .elementor-widget-shortcode .company-portals-grid {
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
 @media (max-width: 1200px) {
   .company-portals-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1058,12 +1073,12 @@ html.mc-adminbar-hidden #wpadminbar {
 .location-card__name {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  color: rgba(255,255,255,0.85);
+  color: var(--sede-font-color, rgba(255,255,255,0.85));
 }
 
 .location-card__address {
   font-size: var(--text-xs);
-  color: rgba(255,255,255,0.50);
+  color: var(--sede-font-color, rgba(255,255,255,0.50));
   line-height: var(--leading-relaxed);
 }
 

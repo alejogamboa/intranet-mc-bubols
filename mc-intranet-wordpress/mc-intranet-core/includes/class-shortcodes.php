@@ -180,84 +180,10 @@ class MC_Intranet_Shortcodes {
     // ─── [mc_company_portals] ────────────────────────────────────────────────
 
     public function shortcode_company_portals( $atts ): string {
-        $portals = [
-            [
-                'slug'        => 'anstra',
-                'name'        => 'Projection Anstra',
-                'desc'        => 'Gestión administrativa, contabilidad y recursos humanos del grupo corporativo.',
-                'color_start' => '#1A2E52',
-                'color_end'   => '#253E6E',
-                'link_color'  => '#1A2E52',
-                'header_bg_color'   => '#FFFFFF',
-                'header_text_color' => '#0F172A',
-                'url'         => home_url( '/anstra/' ),
-                'tags'        => [ 'RRHH', 'Contabilidad', 'Administración' ],
-                'count_label' => '4 formularios',
-            ],
-            [
-                'slug'        => 'essenza',
-                'name'        => 'Essenza Foods',
-                'desc'        => 'Gestión de marca, comercial, mercadeo y ventas de la línea de alimentos.',
-                'color_start' => '#1B6B45',
-                'color_end'   => '#237D53',
-                'link_color'  => '#1B6B45',
-                'header_bg_color'   => '#FFFFFF',
-                'header_text_color' => '#0F172A',
-                'url'         => home_url( '/essenza/' ),
-                'tags'        => [ 'RRHH', 'Comercial', 'Mercadeo' ],
-                'count_label' => '4 formularios',
-            ],
-            [
-                'slug'        => 'budefry',
-                'name'        => 'Budefry SAS',
-                'desc'        => 'Operación, logística y procesos de producción industrial.',
-                'color_start' => '#2D3748',
-                'color_end'   => '#3D4F66',
-                'link_color'  => '#2D3748',
-                'header_bg_color'   => '#FFFFFF',
-                'header_text_color' => '#0F172A',
-                'url'         => home_url( '/budefry/' ),
-                'tags'        => [ 'RRHH', 'Producción', 'Operaciones' ],
-                'count_label' => '4 formularios',
-            ],
-            [
-                'slug'        => 'interactua',
-                'name'        => 'Interactúa',
-                'desc'        => 'Cultura corporativa, employer branding, reconocimientos y eventos del grupo.',
-                'color_start' => '#4338CA',
-                'color_end'   => '#5048D6',
-                'link_color'  => '#4338CA',
-                'header_bg_color'   => '#FFFFFF',
-                'header_text_color' => '#0F172A',
-                'url'         => home_url( '/interactua/' ),
-                'tags'        => [ 'Reconocimientos', 'Eventos', 'Cultura' ],
-                'count_label' => 'Novedades',
-            ],
-        ];
+        $portals = $this->get_company_portals_from_cpt();
 
-        if ( class_exists( 'MC_Intranet_Branding_Settings' ) ) {
-            foreach ( $portals as &$portal ) {
-                $portal_slug = sanitize_key( (string) ( $portal['slug'] ?? '' ) );
-
-                if ( ! in_array( $portal_slug, MC_Intranet_Branding_Settings::editable_companies(), true ) ) {
-                    continue;
-                }
-
-                $branding_settings = MC_Intranet_Branding_Settings::get_company_settings( $portal_slug );
-
-                if ( ! empty( $branding_settings['name'] ) ) {
-                    $portal['name'] = (string) $branding_settings['name'];
-                }
-
-                if ( ! empty( $branding_settings['header_bg_color'] ) ) {
-                    $portal['header_bg_color'] = (string) $branding_settings['header_bg_color'];
-                }
-
-                if ( ! empty( $branding_settings['header_text_color'] ) ) {
-                    $portal['header_text_color'] = (string) $branding_settings['header_text_color'];
-                }
-            }
-            unset( $portal );
+        if ( [] === $portals ) {
+            $portals = $this->get_default_company_portals();
         }
 
         ob_start();
@@ -267,6 +193,140 @@ class MC_Intranet_Shortcodes {
         }
         echo '</div>';
         return ob_get_clean();
+    }
+
+    private function get_company_portals_from_cpt(): array {
+        $query = new WP_Query( [
+            'post_type'      => 'mc_company_portal',
+            'posts_per_page' => 50,
+            'post_status'    => 'publish',
+            'orderby'        => [
+                'menu_order' => 'ASC',
+                'title'      => 'ASC',
+            ],
+            'order'          => 'ASC',
+        ] );
+
+        if ( ! $query->have_posts() ) {
+            return [];
+        }
+
+        $portals = [];
+
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $post_id = get_the_ID();
+
+            $slug = sanitize_key( (string) get_post_meta( $post_id, 'portal_slug', true ) );
+            if ( '' === $slug ) {
+                $slug = sanitize_key( (string) get_post_field( 'post_name', $post_id ) );
+            }
+
+            if ( '' === $slug ) {
+                continue;
+            }
+
+            $raw_tags = (string) get_post_meta( $post_id, 'portal_tags', true );
+            $tags = array_values(
+                array_filter(
+                    array_map(
+                        static function ( string $tag ): string {
+                            return sanitize_text_field( trim( $tag ) );
+                        },
+                        explode( ',', $raw_tags )
+                    )
+                )
+            );
+
+            $portal_name = (string) get_post_meta( $post_id, 'portal_name', true );
+            $portal_desc = (string) get_post_meta( $post_id, 'portal_desc', true );
+            $portal_url  = esc_url_raw( (string) get_post_meta( $post_id, 'portal_url', true ) );
+
+            $portals[] = [
+                'slug'              => $slug,
+                'name'              => '' !== $portal_name ? $portal_name : get_the_title( $post_id ),
+                'desc'              => $portal_desc,
+                'color_start'       => $this->sanitize_hex_or_default( (string) get_post_meta( $post_id, 'portal_color_start', true ), '#1A2E52' ),
+                'color_end'         => $this->sanitize_hex_or_default( (string) get_post_meta( $post_id, 'portal_color_end', true ), '#253E6E' ),
+                'link_color'        => $this->sanitize_hex_or_default( (string) get_post_meta( $post_id, 'portal_link_color', true ), '#1A2E52' ),
+                'header_bg_color'   => $this->sanitize_hex_or_default( (string) get_post_meta( $post_id, 'portal_header_bg_color', true ), '#FFFFFF' ),
+                'header_text_color' => $this->sanitize_hex_or_default( (string) get_post_meta( $post_id, 'portal_header_text_color', true ), '#0F172A' ),
+                'url'               => $portal_url ? $portal_url : home_url( '/' . $slug . '/' ),
+                'tags'              => $tags,
+                'count_label'       => (string) get_post_meta( $post_id, 'portal_count_label', true ) ?: __( 'Novedades', 'mc-intranet-core' ),
+            ];
+        }
+
+        wp_reset_postdata();
+
+        return $portals;
+    }
+
+    private function sanitize_hex_or_default( string $value, string $fallback ): string {
+        $hex = sanitize_hex_color( $value );
+
+        if ( $hex ) {
+            return $hex;
+        }
+
+        return $fallback;
+    }
+
+    private function get_default_company_portals(): array {
+        return [
+            [
+                'slug'              => 'anstra',
+                'name'              => 'Projection Anstra',
+                'desc'              => 'Gestión administrativa, contabilidad y recursos humanos del grupo corporativo.',
+                'color_start'       => '#1A2E52',
+                'color_end'         => '#253E6E',
+                'link_color'        => '#1A2E52',
+                'header_bg_color'   => '#FFFFFF',
+                'header_text_color' => '#0F172A',
+                'url'               => home_url( '/anstra/' ),
+                'tags'              => [ 'RRHH', 'Contabilidad', 'Administración' ],
+                'count_label'       => '4 formularios',
+            ],
+            [
+                'slug'              => 'essenza',
+                'name'              => 'Essenza Foods',
+                'desc'              => 'Gestión de marca, comercial, mercadeo y ventas de la línea de alimentos.',
+                'color_start'       => '#1B6B45',
+                'color_end'         => '#237D53',
+                'link_color'        => '#1B6B45',
+                'header_bg_color'   => '#FFFFFF',
+                'header_text_color' => '#0F172A',
+                'url'               => home_url( '/essenza/' ),
+                'tags'              => [ 'RRHH', 'Comercial', 'Mercadeo' ],
+                'count_label'       => '4 formularios',
+            ],
+            [
+                'slug'              => 'budefry',
+                'name'              => 'Budefry SAS',
+                'desc'              => 'Operación, logística y procesos de producción industrial.',
+                'color_start'       => '#2D3748',
+                'color_end'         => '#3D4F66',
+                'link_color'        => '#2D3748',
+                'header_bg_color'   => '#FFFFFF',
+                'header_text_color' => '#0F172A',
+                'url'               => home_url( '/budefry/' ),
+                'tags'              => [ 'RRHH', 'Producción', 'Operaciones' ],
+                'count_label'       => '4 formularios',
+            ],
+            [
+                'slug'              => 'interactua',
+                'name'              => 'Interactúa',
+                'desc'              => 'Cultura corporativa, employer branding, reconocimientos y eventos del grupo.',
+                'color_start'       => '#4338CA',
+                'color_end'         => '#5048D6',
+                'link_color'        => '#4338CA',
+                'header_bg_color'   => '#FFFFFF',
+                'header_text_color' => '#0F172A',
+                'url'               => home_url( '/interactua/' ),
+                'tags'              => [ 'Reconocimientos', 'Eventos', 'Cultura' ],
+                'count_label'       => 'Novedades',
+            ],
+        ];
     }
 
     // ─── [mc_sedes] ──────────────────────────────────────────────────────────
@@ -300,12 +360,14 @@ class MC_Intranet_Shortcodes {
         echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">';
         while ( $query->have_posts() ) {
             $query->the_post();
+            $sede_font_color_raw = sanitize_hex_color( (string) get_post_meta( get_the_ID(), 'sede_font_color', true ) );
             $sede_data = [
-                'company'  => esc_html( (string) get_post_meta( get_the_ID(), 'company_label', true ) ),
-                'name'     => esc_html( get_the_title() ),
-                'address'  => esc_html( (string) get_post_meta( get_the_ID(), 'address_full', true ) ),
-                'maps_url' => esc_url( (string) get_post_meta( get_the_ID(), 'maps_url', true ) ),
-                'logo_id'  => absint( (string) get_post_meta( get_the_ID(), 'sede_logo_id', true ) ),
+                'company'    => esc_html( (string) get_post_meta( get_the_ID(), 'company_label', true ) ),
+                'name'       => esc_html( get_the_title() ),
+                'address'    => esc_html( (string) get_post_meta( get_the_ID(), 'address_full', true ) ),
+                'maps_url'   => esc_url( (string) get_post_meta( get_the_ID(), 'maps_url', true ) ),
+                'logo_id'    => absint( (string) get_post_meta( get_the_ID(), 'sede_logo_id', true ) ),
+                'font_color' => $sede_font_color_raw ?: '',
             ];
             include MC_CORE_TEMPLATES . 'footer-location.php';
         }

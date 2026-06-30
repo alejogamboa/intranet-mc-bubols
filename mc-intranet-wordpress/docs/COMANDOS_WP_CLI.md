@@ -73,3 +73,27 @@ docker compose --profile cli run --rm wpcli bash -lc 'cd /var/www/html && bash w
 Notas:
 - El seed es idempotente para formularios, sedes y páginas por slug canónico.
 - Si necesitas relanzarlo, puedes ejecutar el mismo comando sin duplicar registros canonizados.
+
+## 9. Migrar portales hardcodeados al CPT mc_company_portal (produccion)
+
+Dry-run (recomendado primero, no escribe cambios):
+
+```bash
+docker compose --profile cli run --rm wpcli wp eval-file \
+  /var/www/html/wp-content/plugins/mc-intranet-core/bin/migrate-company-portals-to-cpt.php
+```
+
+Aplicar migracion real (upsert idempotente por slug):
+
+```bash
+docker compose --profile cli run --rm wpcli wp eval-file \
+  /var/www/html/wp-content/plugins/mc-intranet-core/bin/migrate-company-portals-to-cpt.php -- --apply
+```
+
+Verificar registros creados/actualizados:
+
+```bash
+docker compose --profile cli run --rm wpcli wp post list \
+  --post_type=mc_company_portal --post_status=publish,draft,pending,private,future \
+  --fields=ID,post_title,post_name,menu_order,post_status --orderby=menu_order --order=ASC
+```
